@@ -10,10 +10,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-<<<<<<< HEAD
-// StartServer will start the http server
-func StartServer() {
-=======
 // Server stores config of server
 type Server struct {
 	Port string
@@ -21,7 +17,6 @@ type Server struct {
 
 // StartServer will start the http server
 func (s *Server) StartServer() {
->>>>>>> a0ac986cc8765282eb714172544bae10f39f6248
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
