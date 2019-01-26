@@ -12,7 +12,8 @@ import (
 
 // Server stores config of server
 type Server struct {
-	Port string
+	Title string
+	Port  string
 }
 
 // StartServer will start the http server
@@ -29,11 +30,25 @@ func registerHandlers() {
 	r := mux.NewRouter()
 
 	r.Handle("/", http.RedirectHandler("/books", http.StatusFound))
-
+	r.Methods("GET").Path("/books").Handler(appHandler(
+		func(w http.ResponseWriter, r *http.Request) *appError {
+			fmt.Fprint(w, profileFromSession(r))
+			return nil
+		},
+	))
+	r.Methods("GET").Path("/drive").Handler(appHandler(
+		func(w http.ResponseWriter, r *http.Request) *appError {
+			driveSample()
+			return nil
+		},
+	))
 	// The following handlers are defined in auth.go and used in the
 	// "Authenticating Users" part of the Getting Started guide.
-	r.Methods("GET").Path("/login").
-		Handler(appHandler(loginHandler))
+	r.Methods("GET").Path("/login").Handler(appHandler(loginHandler))
+	r.Methods("POST").Path("/logout").
+		Handler(appHandler(logoutHandler))
+	r.Methods("GET").Path("/oauth2callback").
+		Handler(appHandler(oauthCallbackHandler))
 
 	// Respond to App Engine and Compute Engine health checks.
 	// Indicate the server is healthy.
@@ -47,11 +62,6 @@ func registerHandlers() {
 	// Log all requests using the standard Apache format.
 	http.Handle("/", handlers.CombinedLoggingHandler(os.Stderr, r))
 	// [END request_logging]
-}
-func loginHandler(w http.ResponseWriter, r *http.Request) *appError {
-	// w.Write([]byte("asdfsd"))
-	w.WriteHeader(http.StatusOK)
-	return nil
 }
 
 // http://blog.golang.org/error-handling-and-go
