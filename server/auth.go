@@ -10,7 +10,7 @@ import (
 
 	uuid "github.com/satori/go.uuid"
 	"golang.org/x/oauth2"
-	"google.golang.org/api/plus/v1"
+	"google.golang.org/api/drive/v3"
 )
 
 type Profile struct {
@@ -140,25 +140,26 @@ func oauthCallbackHandler(w http.ResponseWriter, r *http.Request) *appError {
 
 // fetchProfile retrieves the Google+ profile of the user associated with the
 // provided OAuth token.
-func fetchProfile(ctx context.Context, tok *oauth2.Token) (*plus.Person, error) {
+func fetchProfile(ctx context.Context, tok *oauth2.Token) (*drive.About, error) {
 	client := oauth2.NewClient(ctx, OAuthConfig.TokenSource(ctx, tok))
-	plusService, err := plus.New(client)
+	// plusService, err := plus.New(client)
+	driveService, err := drive.New(client)
 	if err != nil {
 		return nil, err
 	}
-	return plusService.People.Get("me").Do()
+	return driveService.About.Get().Fields("user/permissionId, user/photoLink, user/displayName").Do()
 }
 
-// stripProfile returns a subset of a plus.Person.
-func stripProfile(p *plus.Person) *Profile {
+// stripProfile returns a subset of a drive.User.
+func stripProfile(p *drive.About) *Profile {
 	return &Profile{
-		ID:          p.Id,
-		DisplayName: p.DisplayName,
-		ImageURL:    p.Image.Url,
+		ID:          p.User.PermissionId,
+		DisplayName: p.User.DisplayName,
+		ImageURL:    p.User.PhotoLink,
 	}
 }
 
-// profileFromSession retreives the Google+ profile from the default session.
+// profileFromSession retreives the Gdrive profile from the default session.
 // Returns nil if the profile cannot be retreived (e.g. user is logged out).
 func profileFromSession(r *http.Request) *Profile {
 	session, err := SessionStore.Get(r, defaultSessionID)

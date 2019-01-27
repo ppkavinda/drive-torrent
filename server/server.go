@@ -1,67 +1,76 @@
 package server
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 
-	"github.com/gorilla/handlers"
-	"github.com/gorilla/mux"
+	"github.com/ppkavinda/drive-torrent/engine"
 )
 
 // Server stores config of server
 type Server struct {
-	Title string
-	Port  string
+	Title      string
+	Port       string
+	engine     *engine.Engine
+	Host       string
+	ConfigPath string
+	state      struct {
+		Config engine.Config
+	}
 }
 
 // StartServer will start the http server
-func (s *Server) StartServer() {
+func (s *Server) StartServer() error {
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
 	}
-	registerHandlers()
+
+	s.engine = engine.New()
+
+	c := engine.Config{
+		DownloadDirectory: "./downloads",
+		EnableUpload:      true,
+		AutoStart:         true,
+	}
+
+	if c.IncomingPort <= 0 || c.IncomingPort >= 65535 {
+		c.IncomingPort = 50007
+	}
+
+	if err := s.reconfig(c); err != nil {
+		return err.Error
+		// return appErrorf(err, "Unable to Configure %v", err)
+	}
+
+	host := s.Host
+	if host == "" {
+		host = "0.0.0.0"
+	}
+
+	registerRoutes(s)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), nil))
+	return nil
 }
 
-func registerHandlers() {
-	r := mux.NewRouter()
-
-	r.Handle("/", http.RedirectHandler("/books", http.StatusFound))
-	r.Methods("GET").Path("/books").Handler(appHandler(
-		func(w http.ResponseWriter, r *http.Request) *appError {
-			fmt.Fprint(w, profileFromSession(r))
-			return nil
-		},
-	))
-	r.Methods("GET").Path("/drive").Handler(appHandler(
-		func(w http.ResponseWriter, r *http.Request) *appError {
-			driveSample()
-			return nil
-		},
-	))
-	// The following handlers are defined in auth.go and used in the
-	// "Authenticating Users" part of the Getting Started guide.
-	r.Methods("GET").Path("/login").Handler(appHandler(loginHandler))
-	r.Methods("POST").Path("/logout").
-		Handler(appHandler(logoutHandler))
-	r.Methods("GET").Path("/oauth2callback").
-		Handler(appHandler(oauthCallbackHandler))
-
-	// Respond to App Engine and Compute Engine health checks.
-	// Indicate the server is healthy.
-	r.Methods("GET").Path("/_ah/health").HandlerFunc(
-		func(w http.ResponseWriter, r *http.Request) {
-			w.Write([]byte("ok"))
-		})
-
-	// [START request_logging]
-	// Delegate all of the HTTP routing and serving to the gorilla/mux router.
-	// Log all requests using the standard Apache format.
-	http.Handle("/", handlers.CombinedLoggingHandler(os.Stderr, r))
-	// [END request_logging]
+func (s *Server) reconfig(c engine.Config) *appError {
+	dldir, err := filepath.Abs(c.DownloadDirectory)
+	if err != nil {
+		return appErrorf(err, "Invalid Path %v", err)
+	}
+	c.DownloadDirectory = dldir
+	if err := s.engine.Config(c); err != nil {
+		return appErrorf(err, "Unable to configure: %v", err)
+	}
+	b, _ := json.MarshalIndent(&c, "", " ")
+	ioutil.WriteFile(s.ConfigPath, b, 0755)
+	s.state.Config = c
+	return nil
 }
 
 // http://blog.golang.org/error-handling-and-go

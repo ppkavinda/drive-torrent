@@ -9,8 +9,10 @@ import (
 )
 
 var (
+	// SessionStore : store session globally
 	SessionStore sessions.Store
-	OAuthConfig  *oauth2.Config
+	// OAuthConfig : store authConfigs globally
+	OAuthConfig *oauth2.Config
 )
 
 func init() {
@@ -32,7 +34,7 @@ func configureOAuthClient(clientID, clientSecret string) *oauth2.Config {
 		ClientID:     clientID,
 		ClientSecret: clientSecret,
 		RedirectURL:  redirectURL,
-		Scopes:       []string{"email", "profile"},
+		Scopes:       []string{"email", "profile", "https://www.googleapis.com/auth/drive"},
 		Endpoint:     google.Endpoint,
 	}
 }

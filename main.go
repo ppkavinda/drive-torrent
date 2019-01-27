@@ -5,7 +5,6 @@ import (
 )
 
 func main() {
-	// oauthConfig = configureOAuthClient("404364039745-0caba0fvhaja2cogru4jvl0gqq3anf50.apps.googleusercontent.com", "zRly0iH-ThMZrYRxER5PT_ue")
 
 	// conf := torrent.Config{
 	// 	DataDir: "./downloads",
@@ -24,7 +23,8 @@ func main() {
 	// fmt.Println(t.Stats())
 	// fmt.Println(c.Torrents())
 	s := server.Server{
-		Port: "8080",
+		Port:       "8080",
+		ConfigPath: "drive-torrent.json",
 	}
 	s.StartServer()
 }

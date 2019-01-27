@@ -1,0 +1,8 @@
+{
+ "AutoStart": true,
+ "DisableEncryption": false,
+ "DownloadDirectory": "/home/prasad/go/src/github.com/ppkavinda/drive-torrent/downloads",
+ "EnableUpload": true,
+ "EnableSeeding": false,
+ "IncomingPort": 50007
+}
