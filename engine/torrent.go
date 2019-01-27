@@ -20,6 +20,8 @@ type Torrent struct {
 	DownloadRate float32
 	t            *torrent.Torrent
 	updatedAt    time.Time
+
+	UserEmail string
 }
 
 // File inside a torrent
@@ -34,17 +36,17 @@ type File struct {
 	f       torrent.File
 }
 
-// update info of a torrent
-func (torrent *Torrent) Update(t *torrent.Torrent) {
+// Update info of a torrent
+func (torrent *Torrent) Update(t *torrent.Torrent, userEmail string) {
 	torrent.Name = t.Name()
 	torrent.Loaded = t.Info() != nil
 	if torrent.Loaded {
-		torrent.updateLoaded(t)
+		torrent.updateLoaded(t, userEmail)
 	}
 	torrent.t = t
 }
 
-func (torrent *Torrent) updateLoaded(t *torrent.Torrent) {
+func (torrent *Torrent) updateLoaded(t *torrent.Torrent, userEmail string) {
 	torrent.Size = t.Length()
 	totalChunks := 0
 	totalCompleted := 0
@@ -92,6 +94,7 @@ func (torrent *Torrent) updateLoaded(t *torrent.Torrent) {
 	}
 	torrent.Downloaded = bytes
 	torrent.updatedAt = now
+	torrent.UserEmail = userEmail
 }
 
 func percent(n, total int64) float32 {

@@ -65,16 +65,16 @@ func (e *Engine) Config(c Config) error {
 }
 
 // NewMagnet : add a magnet uri to download
-func (e *Engine) NewMagnet(magnetURI string) error {
+func (e *Engine) NewMagnet(magnetURI string, userEmail string) error {
 	torrent, err := e.client.AddMagnet(magnetURI)
 	if err != nil {
 		return err
 	}
-	return e.newTorrent(torrent)
+	return e.newTorrent(torrent, userEmail)
 }
 
-func (e *Engine) newTorrent(torrent *torrent.Torrent) error {
-	t := e.saveTorrent(torrent)
+func (e *Engine) newTorrent(torrent *torrent.Torrent, userEmail string) error {
+	t := e.saveTorrent(torrent, userEmail)
 
 	// fmt.Printf("INFO %v\n", t.t)
 	go func() {
@@ -104,9 +104,7 @@ func (e *Engine) StartTorrent(infoHash string) error {
 		}
 	}
 
-	fmt.Printf("INFO2 %v\n", t.t)
 	if t.t.Info() != nil {
-		fmt.Printf("INFO %v\n", t.t.Info())
 		t.t.DownloadAll()
 	}
 
@@ -163,19 +161,19 @@ func (e *Engine) GetTorrents() map[string]*Torrent {
 	}
 
 	for _, torrent := range e.client.Torrents() {
-		e.saveTorrent(torrent)
+		e.saveTorrent(torrent, "")
 	}
 	return e.ts
 }
 
 // insert or update a particular torrent in engine.ts
-func (e *Engine) saveTorrent(newTorrent *torrent.Torrent) *Torrent {
+func (e *Engine) saveTorrent(newTorrent *torrent.Torrent, userEmail string) *Torrent {
 	ih := newTorrent.InfoHash().HexString()
 	oldTorrent, ok := e.ts[ih]
 	if !ok {
 		oldTorrent = &Torrent{InfoHash: ih}
 		e.ts[ih] = oldTorrent
 	}
-	oldTorrent.Update(newTorrent)
+	oldTorrent.Update(newTorrent, userEmail)
 	return oldTorrent
 }

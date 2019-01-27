@@ -4,18 +4,12 @@ import (
 	"context"
 	"encoding/gob"
 	"errors"
-	"fmt"
 	"net/http"
 	"net/url"
 
 	uuid "github.com/satori/go.uuid"
 	"golang.org/x/oauth2"
-	"google.golang.org/api/drive/v3"
 )
-
-type Profile struct {
-	ID, DisplayName, ImageURL string
-}
 
 const (
 	oauthFlowRedirectKey    = "redirect"
@@ -54,7 +48,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) *appError {
 	url := OAuthConfig.AuthCodeURL(sessionID, oauth2.ApprovalForce,
 		oauth2.AccessTypeOnline)
 	http.Redirect(w, r, url, http.StatusFound)
-	fmt.Println("redirectURL", redirectURL)
+	// fmt.Println("redirectURL", redirectURL)
 	return nil
 }
 
@@ -136,43 +130,4 @@ func oauthCallbackHandler(w http.ResponseWriter, r *http.Request) *appError {
 
 	http.Redirect(w, r, redirectURL, http.StatusFound)
 	return nil
-}
-
-// fetchProfile retrieves the Google+ profile of the user associated with the
-// provided OAuth token.
-func fetchProfile(ctx context.Context, tok *oauth2.Token) (*drive.About, error) {
-	client := oauth2.NewClient(ctx, OAuthConfig.TokenSource(ctx, tok))
-	// plusService, err := plus.New(client)
-	driveService, err := drive.New(client)
-	if err != nil {
-		return nil, err
-	}
-	return driveService.About.Get().Fields("user/permissionId, user/photoLink, user/displayName").Do()
-}
-
-// stripProfile returns a subset of a drive.User.
-func stripProfile(p *drive.About) *Profile {
-	return &Profile{
-		ID:          p.User.PermissionId,
-		DisplayName: p.User.DisplayName,
-		ImageURL:    p.User.PhotoLink,
-	}
-}
-
-// profileFromSession retreives the Gdrive profile from the default session.
-// Returns nil if the profile cannot be retreived (e.g. user is logged out).
-func profileFromSession(r *http.Request) *Profile {
-	session, err := SessionStore.Get(r, defaultSessionID)
-	if err != nil {
-		return nil
-	}
-	tok, ok := session.Values[oauthTokenSessionKey].(*oauth2.Token)
-	if !ok || !tok.Valid() {
-		return nil
-	}
-	profile, ok := session.Values[googleProfileSessionKey].(*Profile)
-	if !ok {
-		return nil
-	}
-	return profile
 }
