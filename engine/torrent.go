@@ -22,6 +22,7 @@ type Torrent struct {
 	updatedAt    time.Time
 
 	UserEmail string
+	Finished  bool
 }
 
 // File inside a torrent
@@ -37,16 +38,16 @@ type File struct {
 }
 
 // Update info of a torrent
-func (torrent *Torrent) Update(t *torrent.Torrent, userEmail string) {
+func (torrent *Torrent) Update(t *torrent.Torrent) {
 	torrent.Name = t.Name()
 	torrent.Loaded = t.Info() != nil
 	if torrent.Loaded {
-		torrent.updateLoaded(t, userEmail)
+		torrent.updateLoaded(t)
 	}
 	torrent.t = t
 }
 
-func (torrent *Torrent) updateLoaded(t *torrent.Torrent, userEmail string) {
+func (torrent *Torrent) updateLoaded(t *torrent.Torrent) {
 	torrent.Size = t.Length()
 	totalChunks := 0
 	totalCompleted := 0
@@ -94,12 +95,16 @@ func (torrent *Torrent) updateLoaded(t *torrent.Torrent, userEmail string) {
 	}
 	torrent.Downloaded = bytes
 	torrent.updatedAt = now
-	torrent.UserEmail = userEmail
+
+	// torrent if finished download
+	if bytes == torrent.Size {
+
+	}
 }
 
 func percent(n, total int64) float32 {
 	if total == 0 {
 		return float32(0)
 	}
-	return float32(int(float64(10000)*(float64(total)))) / 100
+	return float32(int(float64(10000)*(float64(n)/float64(total)))) / 100
 }

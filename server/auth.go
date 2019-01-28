@@ -9,6 +9,8 @@ import (
 
 	uuid "github.com/satori/go.uuid"
 	"golang.org/x/oauth2"
+
+	"github.com/ppkavinda/drive-torrent/profile"
 )
 
 const (
@@ -21,7 +23,7 @@ const (
 func init() {
 	// Gob encoding for gorilla/sessions
 	gob.Register(&oauth2.Token{})
-	gob.Register(&Profile{})
+	gob.RegisterName("*server.Profile", &profile.Profile{})
 }
 
 func loginHandler(w http.ResponseWriter, r *http.Request) *appError {
@@ -110,7 +112,7 @@ func oauthCallbackHandler(w http.ResponseWriter, r *http.Request) *appError {
 		return appErrorf(err, "could not get auth token: %v", err)
 	}
 
-	session, err := SessionStore.New(r, defaultSessionID)
+	session, err := SessionStore.Get(r, defaultSessionID)
 	if err != nil {
 		return appErrorf(err, "could not get default session: %v", err)
 	}

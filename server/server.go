@@ -1,6 +1,7 @@
 package server
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -8,7 +9,10 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"sync"
+	"time"
 
+	// _ "github.com/mattn/go-sqlite3"
 	"github.com/ppkavinda/drive-torrent/engine"
 )
 
@@ -20,7 +24,10 @@ type Server struct {
 	Host       string
 	ConfigPath string
 	state      struct {
-		Config engine.Config
+		sync.Mutex
+		Config    engine.Config
+		Downloads *fsNode
+		Torrents  map[string]*engine.Torrent
 	}
 }
 
@@ -30,6 +37,8 @@ func (s *Server) StartServer() error {
 	if port == "" {
 		port = "8080"
 	}
+
+	setupDB()
 
 	s.engine = engine.New()
 
@@ -47,6 +56,16 @@ func (s *Server) StartServer() error {
 		return err.Error
 		// return appErrorf(err, "Unable to Configure %v", err)
 	}
+	//poll torrents and files
+	go func() {
+		for {
+			s.state.Lock()
+			s.state.Torrents = s.engine.GetTorrents()
+			// s.state.Downloads = s.listFiles()
+			s.state.Unlock()
+			time.Sleep(1 * time.Second)
+		}
+	}()
 
 	host := s.Host
 	if host == "" {
@@ -71,6 +90,47 @@ func (s *Server) reconfig(c engine.Config) *appError {
 	ioutil.WriteFile(s.ConfigPath, b, 0755)
 	s.state.Config = c
 	return nil
+}
+
+func setupDB() {
+
+	db, err := sql.Open("sqlite3", "./info.db")
+	if err != nil {
+		fmt.Printf("SQL: %v", err)
+	}
+	defer db.Close()
+
+	sqlStmt := `
+		create table if not exists torrents (
+			id integer auto_increment not null primary key,
+			name text,
+			hash text,
+			email text
+			);`
+
+	_, err = db.Exec(sqlStmt)
+	if err != nil {
+		fmt.Printf("%q: %s\n", err, sqlStmt)
+		return
+	}
+
+	rows, err := db.Query("select id, name from torrents")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var id int
+		var name string
+		err = rows.Scan(&id, &name)
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Println(id, name)
+	}
+
 }
 
 // http://blog.golang.org/error-handling-and-go

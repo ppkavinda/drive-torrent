@@ -8,27 +8,29 @@ import (
 
 	"golang.org/x/oauth2"
 	"google.golang.org/api/drive/v3"
-)
 
-// Profile : store user details
-type Profile struct {
-	ID, DisplayName, ImageURL, Email string
-	torrents                         map[string]*Torrent
-}
+	"github.com/ppkavinda/drive-torrent/profile"
+)
 
 // return the user details
 // null if not logged in
 func userHandler(w http.ResponseWriter, r *http.Request) *appError {
-	session, _ := SessionStore.Get(r, "default")
+	// session, _ := SessionStore.Get(r, "default")
 
-	js, err := json.Marshal(session.Values[googleProfileSessionKey])
+	// js, err := json.Marshal(session.Values[googleProfileSessionKey])
+	// js, err := json.Marshal(profile.User)
+	// if err != nil {
+	// 	fmt.Fprintf(w, "%s", err)
+	// }
+	// User = session.Values[googleProfileSessionKey]
+
+	js, err := json.Marshal(GetUser())
 	if err != nil {
 		fmt.Fprintf(w, "%s", err)
 	}
 
 	w.Header().Set("content-type", "application/json")
-	// w.Write(js)
-	fmt.Fprintf(w, "%s", session.Values("Email"))
+	w.Write(js)
 	return nil
 }
 
@@ -45,18 +47,20 @@ func fetchProfile(ctx context.Context, tok *oauth2.Token) (*drive.About, error) 
 }
 
 // stripProfile returns a subset of a drive.User.
-func stripProfile(p *drive.About) *Profile {
-	return &Profile{
+func stripProfile(p *drive.About) *profile.Profile {
+	profile.User = &profile.Profile{
 		ID:          p.User.PermissionId,
 		DisplayName: p.User.DisplayName,
 		ImageURL:    p.User.PhotoLink,
 		Email:       p.User.EmailAddress,
 	}
+	fmt.Printf("%v", profile.User)
+	return profile.User
 }
 
 // ProfileFromSession retreives the Gdrive profile from the default session.
 // Returns nil if the profile cannot be retreived (e.g. user is logged out).
-func ProfileFromSession(r *http.Request) *Profile {
+func ProfileFromSession(r *http.Request) *profile.Profile {
 	session, err := SessionStore.Get(r, defaultSessionID)
 	if err != nil {
 		return nil
@@ -65,9 +69,10 @@ func ProfileFromSession(r *http.Request) *Profile {
 	if !ok || !tok.Valid() {
 		return nil
 	}
-	profile, ok := session.Values[googleProfileSessionKey].(*Profile)
+	profile, ok := session.Values[googleProfileSessionKey].(*profile.Profile)
 	if !ok {
 		return nil
 	}
+
 	return profile
 }

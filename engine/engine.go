@@ -1,16 +1,18 @@
 package engine
 
 import (
+	"database/sql"
 	"encoding/hex"
 	"fmt"
+	"log"
 	"strconv"
 	"sync"
 	"time"
 
 	"github.com/anacrolix/dht"
-	"github.com/anacrolix/torrent/metainfo"
-
 	"github.com/anacrolix/torrent"
+	"github.com/anacrolix/torrent/metainfo"
+	"github.com/ppkavinda/drive-torrent/profile"
 )
 
 // Engine : Drive torrent Engine
@@ -65,20 +67,29 @@ func (e *Engine) Config(c Config) error {
 }
 
 // NewMagnet : add a magnet uri to download
-func (e *Engine) NewMagnet(magnetURI string, userEmail string) error {
+func (e *Engine) NewMagnet(magnetURI string) error {
 	torrent, err := e.client.AddMagnet(magnetURI)
 	if err != nil {
+		fmt.Printf("DONE2 %v\n", err)
+
 		return err
 	}
-	return e.newTorrent(torrent, userEmail)
+
+	saveInDb(torrent, profile.User.Email)
+
+	return e.newTorrent(torrent)
 }
 
-func (e *Engine) newTorrent(torrent *torrent.Torrent, userEmail string) error {
-	t := e.saveTorrent(torrent, userEmail)
+func (e *Engine) newTorrent(torrent *torrent.Torrent) error {
+	t := e.saveTorrent(torrent)
+	fmt.Printf("DONE4 %v\n", e.client.Torrents())
 
-	// fmt.Printf("INFO %v\n", t.t)
 	go func() {
-		<-t.t.GotInfo()
+		// wait for engine to collect information
+		st := <-t.t.GotInfo()
+
+		fmt.Printf("DONE4 %v\n", st)
+
 		e.StartTorrent(t.InfoHash)
 	}()
 
@@ -87,12 +98,20 @@ func (e *Engine) newTorrent(torrent *torrent.Torrent, userEmail string) error {
 
 // StartTorrent : start a relevent torrent according to the infoHash
 func (e *Engine) StartTorrent(infoHash string) error {
+	fmt.Printf("DONE3 %v\n", infoHash)
+
 	t, err := e.getOpenTorrent(infoHash)
+
+	fmt.Println("HASH", infoHash)
+
 	if err != nil {
+		fmt.Printf("DONE3 %v\n", err)
+
 		return err
 	}
 
 	if t.Started {
+		fmt.Println("Already started")
 		return fmt.Errorf("Already started")
 	}
 
@@ -116,6 +135,8 @@ func (e *Engine) StartTorrent(infoHash string) error {
 func (e *Engine) getOpenTorrent(infoHash string) (*Torrent, error) {
 	t, err := e.getTorrent(infoHash)
 	if err != nil {
+		fmt.Printf("getOpenTorrent %v\n", err)
+
 		return nil, err
 	}
 
@@ -126,6 +147,8 @@ func (e *Engine) getOpenTorrent(infoHash string) (*Torrent, error) {
 func (e *Engine) getTorrent(infoHash string) (*Torrent, error) {
 	hi, err := str2hi(infoHash)
 	if err != nil {
+		fmt.Printf("getTorrent %v\n", err)
+
 		return nil, err
 	}
 	t, ok := e.ts[hi.HexString()]
@@ -142,6 +165,8 @@ func str2hi(infoHash string) (metainfo.Hash, error) {
 
 	e, err := hex.Decode(hi[:], []byte(infoHash))
 	if err != nil {
+		fmt.Printf("str2hi %v\n", err)
+
 		return hi, fmt.Errorf("Invalid hex string")
 	}
 	if e != 20 {
@@ -161,19 +186,48 @@ func (e *Engine) GetTorrents() map[string]*Torrent {
 	}
 
 	for _, torrent := range e.client.Torrents() {
-		e.saveTorrent(torrent, "")
+		e.saveTorrent(torrent)
 	}
 	return e.ts
 }
 
 // insert or update a particular torrent in engine.ts
-func (e *Engine) saveTorrent(newTorrent *torrent.Torrent, userEmail string) *Torrent {
+func (e *Engine) saveTorrent(newTorrent *torrent.Torrent) *Torrent {
+	// newTorrent.Drop()
 	ih := newTorrent.InfoHash().HexString()
 	oldTorrent, ok := e.ts[ih]
 	if !ok {
 		oldTorrent = &Torrent{InfoHash: ih}
 		e.ts[ih] = oldTorrent
 	}
-	oldTorrent.Update(newTorrent, userEmail)
+	oldTorrent.Update(newTorrent)
 	return oldTorrent
+}
+
+func saveInDb(torrent *torrent.Torrent, email string) {
+	db, err := sql.Open("sqlite3", "./info.db")
+	if err != nil {
+		fmt.Printf("SQL: %v", err)
+	}
+	defer db.Close()
+
+	tx, err := db.Begin()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	stmt, err := tx.Prepare("insert into torrents(id, name, hash, email) values(?, ?, ?, ?)")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer stmt.Close()
+
+	_, err = stmt.Exec(1, torrent.Name, torrent.InfoHash, email)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	tx.Commit()
+
 }
