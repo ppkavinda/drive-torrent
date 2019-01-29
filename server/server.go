@@ -67,7 +67,7 @@ func (s *Server) StartServer() error {
 
 			for _, torrent := range s.state.Torrents {
 				if torrent.Finished && !torrent.Uploaded {
-					s.uploadFile(torrent)
+					s.uploadFiles(torrent)
 					torrent.Uploaded = true
 				}
 			}

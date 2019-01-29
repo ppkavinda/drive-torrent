@@ -20,8 +20,8 @@ func getClient(config *oauth2.Config, email string) *http.Client {
 	if err != nil {
 		fmt.Printf("Couldn't get Token\n")
 		return nil
-		tok = getTokenFromWeb(config)
-		saveToken(tokFile, tok)
+		// tok = getTokenFromWeb(config)
+		// saveToken(tokFile, tok)
 	}
 	return config.Client(context.Background(), tok)
 }
