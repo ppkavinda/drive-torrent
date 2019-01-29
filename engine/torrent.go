@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/anacrolix/torrent"
@@ -23,6 +24,7 @@ type Torrent struct {
 
 	UserEmail string
 	Finished  bool
+	Uploaded  bool
 }
 
 // File inside a torrent
@@ -98,8 +100,10 @@ func (torrent *Torrent) updateLoaded(t *torrent.Torrent) {
 
 	// torrent if finished download
 	if bytes == torrent.Size {
-
+		torrent.Finished = true
 	}
+
+	fmt.Printf("NOT FINISHED\n")
 }
 
 func percent(n, total int64) float32 {

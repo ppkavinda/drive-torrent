@@ -12,7 +12,6 @@ import (
 	"github.com/anacrolix/dht"
 	"github.com/anacrolix/torrent"
 	"github.com/anacrolix/torrent/metainfo"
-	"github.com/ppkavinda/drive-torrent/profile"
 )
 
 // Engine : Drive torrent Engine
@@ -67,7 +66,7 @@ func (e *Engine) Config(c Config) error {
 }
 
 // NewMagnet : add a magnet uri to download
-func (e *Engine) NewMagnet(magnetURI string) error {
+func (e *Engine) NewMagnet(magnetURI, email string) error {
 	torrent, err := e.client.AddMagnet(magnetURI)
 	if err != nil {
 		fmt.Printf("DONE2 %v\n", err)
@@ -75,7 +74,7 @@ func (e *Engine) NewMagnet(magnetURI string) error {
 		return err
 	}
 
-	saveInDb(torrent, profile.User.Email)
+	saveInDb(torrent, email)
 
 	return e.newTorrent(torrent)
 }
@@ -204,6 +203,14 @@ func (e *Engine) saveTorrent(newTorrent *torrent.Torrent) *Torrent {
 	return oldTorrent
 }
 
+// GetFiles : returns the relatent files of a torrent hash
+func (e *Engine) GetFiles(hash string) []*File {
+	for i, v := range e.ts[hash].Files {
+		fmt.Printf("%d: %+v\n", i, *v)
+	}
+	return e.ts[hash].Files
+}
+
 func saveInDb(torrent *torrent.Torrent, email string) {
 	db, err := sql.Open("sqlite3", "./info.db")
 	if err != nil {
@@ -223,7 +230,7 @@ func saveInDb(torrent *torrent.Torrent, email string) {
 
 	defer stmt.Close()
 
-	_, err = stmt.Exec(1, torrent.Name, torrent.InfoHash, email)
+	_, err = stmt.Exec(nil, torrent.Name(), torrent.InfoHash().HexString(), email)
 	if err != nil {
 		log.Fatal(err)
 	}

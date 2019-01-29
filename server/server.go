@@ -64,6 +64,13 @@ func (s *Server) StartServer() error {
 			// s.state.Downloads = s.listFiles()
 			s.state.Unlock()
 			time.Sleep(1 * time.Second)
+
+			for _, torrent := range s.state.Torrents {
+				if torrent.Finished && !torrent.Uploaded {
+					s.uploadFile(torrent)
+					torrent.Uploaded = true
+				}
+			}
 		}
 	}()
 

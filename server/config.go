@@ -7,8 +7,6 @@ import (
 	"github.com/gorilla/sessions"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
-
-	"github.com/ppkavinda/drive-torrent/profile"
 )
 
 var (
@@ -42,23 +40,4 @@ func configureOAuthClient(clientID, clientSecret string) *oauth2.Config {
 		Scopes:       []string{"email", "profile", "https://www.googleapis.com/auth/drive"},
 		Endpoint:     google.Endpoint,
 	}
-}
-
-// GetUser : getter for User variable
-// if nil check session or token file
-func GetUser() *profile.Profile {
-	if profile.User == nil {
-		session, _ := SessionStore.Get(Request, "default")
-
-		user := session.Values[googleProfileSessionKey]
-
-		profile.User = &profile.Profile{
-			ID:          user.(*profile.Profile).ID,
-			DisplayName: user.(*profile.Profile).DisplayName,
-			ImageURL:    user.(*profile.Profile).ImageURL,
-			Email:       user.(*profile.Profile).Email,
-		}
-	}
-
-	return profile.User
 }

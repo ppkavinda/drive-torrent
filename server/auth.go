@@ -3,9 +3,14 @@ package server
 import (
 	"context"
 	"encoding/gob"
+	"encoding/json"
 	"errors"
+	"fmt"
+	"log"
 	"net/http"
 	"net/url"
+	"os"
+	"path"
 
 	uuid "github.com/satori/go.uuid"
 	"golang.org/x/oauth2"
@@ -130,6 +135,20 @@ func oauthCallbackHandler(w http.ResponseWriter, r *http.Request) *appError {
 		return appErrorf(err, "could not save session: %v", err)
 	}
 
+	tokenFile := profile.User.EmailAddress + ".json"
+	saveToken(path.Join("./tokens", tokenFile), tok)
+
 	http.Redirect(w, r, redirectURL, http.StatusFound)
 	return nil
+}
+
+// Saves a token to a file path.
+func saveToken(path string, token *oauth2.Token) {
+	fmt.Printf("Saving credential file to: %s\n", path)
+	f, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0600)
+	if err != nil {
+		log.Fatalf("Unable to cache oauth token: %v", err)
+	}
+	defer f.Close()
+	json.NewEncoder(f).Encode(token)
 }

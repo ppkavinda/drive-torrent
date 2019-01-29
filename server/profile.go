@@ -18,11 +18,6 @@ func userHandler(w http.ResponseWriter, r *http.Request) *appError {
 	// session, _ := SessionStore.Get(r, "default")
 
 	// js, err := json.Marshal(session.Values[googleProfileSessionKey])
-	// js, err := json.Marshal(profile.User)
-	// if err != nil {
-	// 	fmt.Fprintf(w, "%s", err)
-	// }
-	// User = session.Values[googleProfileSessionKey]
 
 	js, err := json.Marshal(GetUser())
 	if err != nil {
@@ -75,4 +70,23 @@ func ProfileFromSession(r *http.Request) *profile.Profile {
 	}
 
 	return profile
+}
+
+// GetUser : getter for User variable
+// if nil check session or token file
+func GetUser() *profile.Profile {
+	if profile.User == nil {
+		session, _ := SessionStore.Get(Request, "default")
+
+		user := session.Values[googleProfileSessionKey]
+
+		profile.User = &profile.Profile{
+			ID:          user.(*profile.Profile).ID,
+			DisplayName: user.(*profile.Profile).DisplayName,
+			ImageURL:    user.(*profile.Profile).ImageURL,
+			Email:       user.(*profile.Profile).Email,
+		}
+	}
+
+	return profile.User
 }
