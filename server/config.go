@@ -37,7 +37,7 @@ func configureOAuthClient(clientID, clientSecret string) *oauth2.Config {
 		ClientID:     clientID,
 		ClientSecret: clientSecret,
 		RedirectURL:  redirectURL,
-		Scopes:       []string{"email", "profile", "https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/drive"},
+		Scopes:       []string{"email", "profile", "https://www.googleapis.com/auth/drive"},
 		Endpoint:     google.Endpoint,
 	}
 }

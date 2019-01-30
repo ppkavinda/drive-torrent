@@ -1,11 +1,16 @@
 package server
 
 import (
+	"bytes"
 	"fmt"
 	"html/template"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"strings"
+
+	"github.com/anacrolix/torrent"
+	"github.com/anacrolix/torrent/metainfo"
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
@@ -58,6 +63,35 @@ func registerRoutes(s *Server) {
 
 			s.engine.NewMagnet(magnet, GetUser().Email)
 			// fmt.Fprintf(w, "INFO4 %v", magnet)
+			return nil
+		},
+	))
+	r.Methods("POST").Path("/new/url").Handler(appHandler(
+		func(w http.ResponseWriter, r *http.Request) *appError {
+			url := r.FormValue("url")
+			remote, err := http.Get(url)
+			if err != nil {
+				fmt.Printf("Invalud remote url : %+v\n", err)
+				return nil
+			}
+			fileData, err := ioutil.ReadAll(remote.Body)
+			if err != nil {
+				fmt.Printf("Failed To download remote torrent: %+v\n", err)
+				return nil
+			}
+
+			reader := bytes.NewBuffer(fileData)
+			info, err := metainfo.Load(reader)
+			if err != nil {
+				fmt.Printf("Unable to read metaInfo : %+v\n", err)
+				return nil
+			}
+
+			spec := torrent.TorrentSpecFromMetaInfo(info)
+			if err := s.engine.NewTorrentFromSpec(spec); err != nil {
+				fmt.Printf("Torrent Error: %+v\n", err)
+				return nil
+			}
 			return nil
 		},
 	))

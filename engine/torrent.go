@@ -106,6 +106,21 @@ func (torrent *Torrent) updateLoaded(t *torrent.Torrent) {
 	fmt.Printf("NOT FINISHED\n")
 }
 
+// Delete : remove torrent from engine
+func (e *Engine) Delete(infohash string) error {
+	t, err := e.getTorrent(infohash)
+	if err != nil {
+		fmt.Printf("DeleteTorrent: %+v\n", err)
+	}
+
+	delete(e.ts, t.InfoHash)
+	ih, _ := str2hi(infohash)
+	if tt, ok := e.client.Torrent(ih); ok {
+		tt.Drop()
+	}
+	return nil
+}
+
 func percent(n, total int64) float32 {
 	if total == 0 {
 		return float32(0)

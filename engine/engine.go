@@ -1,10 +1,8 @@
 package engine
 
 import (
-	"database/sql"
 	"encoding/hex"
 	"fmt"
-	"log"
 	"strconv"
 	"sync"
 	"time"
@@ -12,6 +10,8 @@ import (
 	"github.com/anacrolix/dht"
 	"github.com/anacrolix/torrent"
 	"github.com/anacrolix/torrent/metainfo"
+
+	"github.com/ppkavinda/drive-torrent/db"
 )
 
 // Engine : Drive torrent Engine
@@ -74,11 +74,20 @@ func (e *Engine) NewMagnet(magnetURI, email string) error {
 		return err
 	}
 
-	saveInDb(torrent, email)
+	db.SaveInDb(torrent, email)
 
 	return e.newTorrent(torrent)
 }
 
+// NewTorrentFromSpec : add torrent from metaInfo
+func (e *Engine) NewTorrentFromSpec(spec *torrent.TorrentSpec) error {
+	tt, _, err := e.client.AddTorrentSpec(spec)
+	if err != nil {
+		fmt.Printf("NEW SPEC: %+v", err)
+		return err
+	}
+	return e.newTorrent(tt)
+}
 func (e *Engine) newTorrent(torrent *torrent.Torrent) error {
 	t := e.saveTorrent(torrent)
 	fmt.Printf("DONE4 %v\n", e.client.Torrents())
@@ -209,32 +218,4 @@ func (e *Engine) GetFiles(hash string) []*File {
 		fmt.Printf("%d: %+v\n", i, *v)
 	}
 	return e.ts[hash].Files
-}
-
-func saveInDb(torrent *torrent.Torrent, email string) {
-	db, err := sql.Open("sqlite3", "./info.db")
-	if err != nil {
-		fmt.Printf("SQL: %v", err)
-	}
-	defer db.Close()
-
-	tx, err := db.Begin()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	stmt, err := tx.Prepare("insert into torrents(id, name, hash, email) values(?, ?, ?, ?)")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	defer stmt.Close()
-
-	_, err = stmt.Exec(nil, torrent.Name(), torrent.InfoHash().HexString(), email)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	tx.Commit()
-
 }

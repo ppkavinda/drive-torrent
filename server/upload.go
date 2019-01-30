@@ -16,7 +16,7 @@ import (
 )
 
 func uploadToDrive(d *drive.Service, description string,
-	parentId string, file *engine.File) (*drive.File, error) {
+	parentID string, file *engine.File) (*drive.File, error) {
 
 	filePath := filepath.Join("./downloads", strings.TrimSpace(file.Path))
 
@@ -26,7 +26,6 @@ func uploadToDrive(d *drive.Service, description string,
 	mimeType := mime.TypeByExtension(extension)
 
 	input, err := os.Open(filePath)
-	fmt.Printf("DONE %+v\n", input)
 	if err != nil {
 		fmt.Printf("An error occurred FILE.OPEN: %v\n", err)
 		return nil, err
@@ -38,68 +37,27 @@ func uploadToDrive(d *drive.Service, description string,
 		return nil, err
 	}
 
-	fmt.Println("Start upload")
-	f := &drive.File{Name: fileName, Parents: []string{parentId}, Description: description, MimeType: mimeType}
+	log.Println("Start upload")
+	f := &drive.File{Name: fileName, Parents: []string{parentID}, Description: description, MimeType: mimeType}
 	getRate := MeasureTransferRate()
 
 	// progress call back
 	showProgress := func(current, total int64) {
-		fmt.Printf("Uploaded at %s, %s/%s\r", getRate(current), Comma(current), Comma(total))
+		log.Printf("Uploaded at %s, %s/%s\r", getRate(current), Comma(current), Comma(total))
 	}
 
 	r, err := d.Files.Create(f).ResumableMedia(context.Background(), input, inputInfo.Size(), mimeType).ProgressUpdater(showProgress).Do()
-	fmt.Printf("DONE3 %+v\n", f.Name)
-	fmt.Printf("DONE4 %+v\n", *r)
 	if err != nil {
 		fmt.Printf("An error occurred: %v\nFILEPATH: %+v\n", err, input.Name())
 		return nil, err
 	}
 
-	fmt.Printf("HIT %v\n", r)
 	// Total bytes transferred
 	bytes := r.Size
 	// Print information about uploaded file
-	fmt.Printf("Uploaded '%s' at %s, total %s\n", r.Name, getRate(bytes), FileSizeFormat(bytes, false))
-	fmt.Printf("Upload Done. ID : %s\n", r.Id)
+	log.Printf("Uploaded '%s' at %s, total %s\n", r.Name, getRate(bytes), FileSizeFormat(bytes, false))
 	// fmt.Printf("File : %+v\n", r)
 	return r, nil
-}
-
-func getOrCreateDriveFolder(d *drive.Service, folderName string, parentId string) string {
-	folderId := ""
-	if folderName == "" {
-		return ""
-	}
-
-	q := fmt.Sprintf("name=\"%s\" and mimeType=\"application/vnd.google-apps.folder\" and trashed = false ", folderName)
-	if parentId != "" {
-		q = fmt.Sprintf("name=\"%s\" and \"%s\" in parents and mimeType=\"application/vnd.google-apps.folder\" and trashed = false ", folderName, parentId)
-	}
-
-	r, err := d.Files.List().Q(q).PageSize(1).Do()
-	if err != nil {
-		fmt.Printf("%s\n", folderName)
-		log.Fatalf("Unable to retrieve foldername. %+v", err)
-	}
-
-	if len(r.Files) > 0 {
-		// fmt.Printf("%+v\n", r.Files[0])
-		folderId = r.Files[0].Id
-	} else {
-		// no folder found create new
-		fmt.Printf("Folder not found. Create new folder : %s\n", folderName)
-		f := &drive.File{Name: folderName, MimeType: "application/vnd.google-apps.folder"}
-
-		if parentId != "" {
-			f = &drive.File{Name: folderName, Parents: []string{parentId}, MimeType: "application/vnd.google-apps.folder"}
-		}
-		r, err := d.Files.Create(f).Do()
-		if err != nil {
-			fmt.Printf("An error occurred when create folder: %v\n", err)
-		}
-		folderId = r.Id
-	}
-	return folderId
 }
 
 // MeasureTransferRate : returns the transfer rate

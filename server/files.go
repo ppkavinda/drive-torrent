@@ -1,7 +1,6 @@
 package server
 
 import (
-	"database/sql"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -10,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ppkavinda/drive-torrent/engine"
+	"github.com/ppkavinda/drive-torrent/db"
 	"golang.org/x/oauth2"
 	"google.golang.org/api/drive/v3"
 )
@@ -46,41 +45,10 @@ func tokenFromFile(file string) (*oauth2.Token, error) {
 	return tok, err
 }
 
-func getEmailOfTorrent(torrent *engine.Torrent) string {
-	db, err := sql.Open("sqlite3", "./info.db")
-	if err != nil {
-		fmt.Printf("SQL: %v", err)
-	}
-	stmt, err := db.Prepare("select id, email from torrents where hash = ?")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer stmt.Close()
-	defer db.Close()
+func (s *Server) uploadFiles(infohash string) {
+	email := db.GetEmailOfTorrent(infohash)
 
-	var id, email string
-	err = stmt.QueryRow(torrent.InfoHash).Scan(&id, &email)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	stmt, err = db.Prepare("delete from torrents where id = ?")
-	if err != nil {
-		log.Fatal(err)
-	}
-	_, err = stmt.Exec(id)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Printf("FINISHED : %s\n", email)
-	return email
-}
-
-func (s *Server) uploadFiles(torrent *engine.Torrent) {
-	email := getEmailOfTorrent(torrent)
-
-	fmt.Printf("FINISHED: %s:%s\n", torrent.InfoHash, email)
-	files := s.engine.GetFiles(torrent.InfoHash)
+	files := s.engine.GetFiles(infohash)
 	client := getClient(OAuthConfig, email)
 
 	srv, err := drive.New(client)
@@ -113,5 +81,15 @@ func (s *Server) uploadFiles(torrent *engine.Torrent) {
 			fmt.Printf("%+v\n", err)
 		}
 	}
-	os.RemoveAll(filepath.Join("./downloads", parentName[0]))
+	err = os.RemoveAll(filepath.Join("./downloads", parentName[0]))
+	if err != nil {
+		fmt.Printf("Cannot Delete file %+v", err)
+		return
+	}
+
+	err = s.engine.Delete(infohash)
+	if err != nil {
+		fmt.Printf("Cannot Delete file %+v", err)
+		return
+	}
 }
