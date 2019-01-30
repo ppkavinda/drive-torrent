@@ -31,9 +31,12 @@ type Server struct {
 	}
 }
 
-// StartServer will start the http server
-func (s *Server) StartServer() error {
+// Start will start the http server
+func (s *Server) Start() error {
 	port := os.Getenv("PORT")
+	if port == "" {
+		port = s.Port
+	}
 	if port == "" {
 		port = "8080"
 	}
@@ -80,6 +83,7 @@ func (s *Server) StartServer() error {
 	}
 
 	registerRoutes(s)
+
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), nil))
 	return nil
 }

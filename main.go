@@ -7,8 +7,8 @@ import (
 func main() {
 
 	s := server.Server{
-		Port:       "8080",
+		Port:       "3000",
 		ConfigPath: "drive-torrent.json",
 	}
-	s.StartServer()
+	s.Start()
 }
