@@ -31,7 +31,7 @@ func init() {
 func configureOAuthClient(clientID, clientSecret string) *oauth2.Config {
 	redirectURL := os.Getenv("OAUTH2_CALLBACK")
 	if redirectURL == "" {
-		redirectURL = "http://localhost:8080/oauth2callback"
+		redirectURL = "http://localhost:3000/oauth2callback"
 	}
 	return &oauth2.Config{
 		ClientID:     clientID,
@@ -40,4 +40,8 @@ func configureOAuthClient(clientID, clientSecret string) *oauth2.Config {
 		Scopes:       []string{"email", "profile", "https://www.googleapis.com/auth/drive"},
 		Endpoint:     google.Endpoint,
 	}
+}
+
+func enableCors(w *http.ResponseWriter) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
 }

@@ -10,8 +10,7 @@ import (
 )
 
 // here lies all the routes of the app
-func registerRoutes(s *Server) {
-	r := mux.NewRouter()
+func registerRoutes(s *Server, r *mux.Router) *mux.Router {
 
 	// r.Handle("/", http.RedirectHandler("/ts", http.StatusFound))
 	r.Path("/").Handler(appHandler(
@@ -53,12 +52,14 @@ func registerRoutes(s *Server) {
 	http.Handle("/", handlers.CombinedLoggingHandler(os.Stderr, r))
 
 	r.Use(isLoggedIn)
+	return r
 }
 
 // Middleware
 func isLoggedIn(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		Request = r
+		// enableCors(&w)
 		if r.RequestURI != "/" && r.RequestURI != "/login" && !strings.HasPrefix(r.RequestURI, "/oauth2callback") {
 			if ProfileFromSession(r) != nil {
 				next.ServeHTTP(w, r)

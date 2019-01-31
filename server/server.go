@@ -11,6 +11,9 @@ import (
 	"sync"
 	"time"
 
+	"github.com/gorilla/mux"
+	"github.com/rs/cors"
+
 	// _ "github.com/mattn/go-sqlite3"
 	"github.com/ppkavinda/drive-torrent/db"
 	"github.com/ppkavinda/drive-torrent/engine"
@@ -82,9 +85,16 @@ func (s *Server) Start() error {
 		host = "0.0.0.0"
 	}
 
-	registerRoutes(s)
+	r := mux.NewRouter()
+	_ = registerRoutes(s, r)
 
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), nil))
+	// cors := cors.New(cors.Options{
+	// 	AllowedOrigins: []string{
+	// 		"http://localhost:3001",
+	// 	},
+	// 	Debug: true,
+	// })
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), cors.Default().Handler(r)))
 	return nil
 }
 

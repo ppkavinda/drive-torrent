@@ -15,9 +15,6 @@ import (
 // return the user details
 // null if not logged in
 func userHandler(w http.ResponseWriter, r *http.Request) *appError {
-	// session, _ := SessionStore.Get(r, "default")
-
-	// js, err := json.Marshal(session.Values[googleProfileSessionKey])
 
 	js, err := json.Marshal(GetUser())
 	if err != nil {
@@ -29,7 +26,7 @@ func userHandler(w http.ResponseWriter, r *http.Request) *appError {
 	return nil
 }
 
-// fetchProfile retrieves the Google+ profile of the user associated with the
+// fetchProfile retrieves the GDrive profile of the user associated with the
 // provided OAuth token.
 func fetchProfile(ctx context.Context, tok *oauth2.Token) (*drive.About, error) {
 	client := oauth2.NewClient(ctx, OAuthConfig.TokenSource(ctx, tok))
@@ -73,10 +70,10 @@ func ProfileFromSession(r *http.Request) *profile.Profile {
 }
 
 // GetUser : getter for User variable
-// if nil check session or token file
+// if nil check session
 func GetUser() *profile.Profile {
 	if profile.User == nil {
-		session, _ := SessionStore.Get(Request, "default")
+		session, _ := SessionStore.Get(Request, defaultSessionID)
 
 		user := session.Values[googleProfileSessionKey]
 
