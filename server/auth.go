@@ -85,6 +85,7 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("could not get default session: %v\n", err)
 	}
 	session.Options.MaxAge = -1 // Clear session.
+	profile.User = nil
 	if err := session.Save(r, w); err != nil {
 		fmt.Printf("could not save session: %v\n", err)
 	}

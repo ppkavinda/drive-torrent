@@ -1,6 +1,9 @@
 package server
 
 import (
+	"encoding/json"
+	"fmt"
+	"html/template"
 	"net/http"
 	"os"
 
@@ -11,11 +14,17 @@ import (
 // here lies all the routes of the app
 func getRoutes(s *Server, r *mux.Router) *mux.Router {
 
-	r.Handle("/", http.FileServer(http.Dir("./static")))
+	r.Methods("GET").Path("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		t := template.Must(template.New("index.html").Funcs(template.FuncMap{
+			"marshal": func(v interface{}) string {
+				a, _ := json.Marshal(v)
+				return string(a)
+			},
+		}).ParseFiles("static/index.html"))
+		fmt.Printf("%+v\n", t.Execute(w, GetUser()))
+	})
 
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static/"))))
-
-	// http.Handle("/new", IsLoggedIn(r))
 
 	r.Methods("GET").Path("/get").HandlerFunc(s.getTorrentsHandler)
 	r.Methods("GET").Path("/new").HandlerFunc(newTorrentFormHandler)
@@ -43,8 +52,9 @@ func getRoutes(s *Server, r *mux.Router) *mux.Router {
 	http.Handle("/new", IsLoggedIn(r))
 	http.Handle("/new/url", IsLoggedIn(r))
 	http.Handle("/new/magnet", IsLoggedIn(r))
-	http.Handle("/user", IsLoggedIn(r))
+	// http.Handle("/user", IsLoggedIn(r))
 
+	r.Use(RegisterRequest)
 	return r
 }
 
@@ -52,9 +62,24 @@ func getRoutes(s *Server, r *mux.Router) *mux.Router {
 func IsLoggedIn(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if ProfileFromSession(r) == nil {
-			http.Redirect(w, r, "/login", http.StatusFound)
+			if reqType := r.Header.Get("X-Requested-With"); reqType == "xmlhttprequest" {
+				w.Header().Set("content-type", "application/json")
+				w.WriteHeader(http.StatusUnauthorized)
+				w.Write([]byte("{}"))
+			} else {
+				http.Redirect(w, r, "/login", http.StatusFound)
+			}
 		} else {
 			h.ServeHTTP(w, r)
 		}
 	})
+}
+
+// RegisterRequest : register request as a global
+func RegisterRequest(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		Request = r
+		next.ServeHTTP(w, r)
+	})
+
 }

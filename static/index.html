@@ -6,21 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>[v-cloak] {display: none}</style>
 
     <title>Drive-Torrent</title>
 </head>
 
 <body>
-    <nav>
-        <div class="nav-wrapper orange darken-1">
-            <div class="container">
-                <a href="#" class="brand-logo">Drive-Torrent</a>
-                <ul id="nav-mobile" class="right hide-on-med-and-down">
-                    <li><a href="sass.html">Logout</a></li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+    <div id="app">
+        <!-- {{ marshal .}} -->
+        <app init-user="{{ marshal .}}"></app>
+    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <script src="/static/js/app.js"></script>

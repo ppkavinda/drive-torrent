@@ -15,8 +15,11 @@ import (
 // return the user details
 // null if not logged in
 func userHandler(w http.ResponseWriter, r *http.Request) {
-
-	js, err := json.Marshal(GetUser())
+	user := GetUser()
+	js, err := json.Marshal(user)
+	if user == nil {
+		js = []byte("{}")
+	}
 	if err != nil {
 		fmt.Fprintf(w, "%s", err)
 	}
@@ -75,6 +78,9 @@ func GetUser() *profile.Profile {
 		session, _ := SessionStore.Get(Request, defaultSessionID)
 
 		user := session.Values[googleProfileSessionKey]
+		if session.IsNew {
+			return nil
+		}
 
 		profile.User = &profile.Profile{
 			ID:          user.(*profile.Profile).ID,

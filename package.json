@@ -16,10 +16,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.18.0",
     "browser-sync": "^2.26.3",
     "browser-sync-webpack-plugin": "^2.2.2",
     "cross-env": "^5.2.0",
-    "laravel-mix": "^4.0.14"
+    "laravel-mix": "^4.0.14",
+    "vue": "^2.5.22"
   },
   "devDependencies": {
     "vue-template-compiler": "^2.5.22"
