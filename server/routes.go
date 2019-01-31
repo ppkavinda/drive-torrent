@@ -3,43 +3,30 @@ package server
 import (
 	"net/http"
 	"os"
-	"strings"
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 )
 
 // here lies all the routes of the app
-func registerRoutes(s *Server, r *mux.Router) *mux.Router {
+func getRoutes(s *Server, r *mux.Router) *mux.Router {
 
-	// r.Handle("/", http.RedirectHandler("/ts", http.StatusFound))
-	r.Path("/").Handler(appHandler(
-		func(w http.ResponseWriter, r *http.Request) *appError {
-			w.Write([]byte("Hi"))
-			return nil
-		},
-	))
+	r.Handle("/", http.FileServer(http.Dir("./static")))
 
-	r.Methods("GET").Path("/get").Handler(appHandler(s.getTorrentsHandler))
-	r.Methods("GET").Path("/new").Handler(appHandler(newTorrentFormHandler))
-	r.Methods("POST").Path("/new/magnet").Handler(appHandler(s.newMagnetHandler))
-	r.Methods("POST").Path("/new/url").Handler(appHandler(s.newURLHandler))
+	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static/"))))
 
-	// r.Methods("GET").Path("/view/{hash}").Handler(appHandler(
-	// 	func(w http.ResponseWriter, r *http.Request) *appError {
-	// 		params := mux.Vars(r)
+	// http.Handle("/new", IsLoggedIn(r))
 
-	// 		s.engine.GetFiles(params["hash"])
-	// 		// fmt.Fprintf(w, "INFO4 %v", magnet)
-	// 		return nil
-	// 	},
-	// ))
+	r.Methods("GET").Path("/get").HandlerFunc(s.getTorrentsHandler)
+	r.Methods("GET").Path("/new").HandlerFunc(newTorrentFormHandler)
+	r.Methods("POST").Path("/new/magnet").HandlerFunc(s.newMagnetHandler)
+	r.Methods("POST").Path("/new/url").HandlerFunc(s.newURLHandler)
 
-	r.Methods("GET").Path("/user").Handler(appHandler(userHandler))
+	r.Methods("GET").Path("/user").HandlerFunc(userHandler)
 
-	r.Methods("GET").Path("/login").Handler(appHandler(loginHandler))
-	r.Methods("GET").Path("/logout").Handler(appHandler(logoutHandler))
-	r.Methods("GET").Path("/oauth2callback").Handler(appHandler(oauthCallbackHandler))
+	r.Methods("GET").Path("/login").HandlerFunc(loginHandler)
+	r.Methods("GET").Path("/logout").HandlerFunc(logoutHandler)
+	r.Methods("GET").Path("/oauth2callback").HandlerFunc(oauthCallbackHandler)
 
 	// Respond to App Engine and Compute Engine health checks.
 	// Indicate the server is healthy.
@@ -51,23 +38,23 @@ func registerRoutes(s *Server, r *mux.Router) *mux.Router {
 	// Log all requests using the standard Apache format.
 	http.Handle("/", handlers.CombinedLoggingHandler(os.Stderr, r))
 
-	r.Use(isLoggedIn)
+	// add middleware
+	http.Handle("/get", IsLoggedIn(r))
+	http.Handle("/new", IsLoggedIn(r))
+	http.Handle("/new/url", IsLoggedIn(r))
+	http.Handle("/new/magnet", IsLoggedIn(r))
+	http.Handle("/user", IsLoggedIn(r))
+
 	return r
 }
 
-// Middleware
-func isLoggedIn(next http.Handler) http.Handler {
+// IsLoggedIn :  Middleware
+func IsLoggedIn(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		Request = r
-		// enableCors(&w)
-		if r.RequestURI != "/" && r.RequestURI != "/login" && !strings.HasPrefix(r.RequestURI, "/oauth2callback") {
-			if ProfileFromSession(r) != nil {
-				next.ServeHTTP(w, r)
-			} else {
-				http.Redirect(w, r, "/login", http.StatusUnauthorized)
-			}
+		if ProfileFromSession(r) == nil {
+			http.Redirect(w, r, "/login", http.StatusFound)
 		} else {
-			next.ServeHTTP(w, r)
+			h.ServeHTTP(w, r)
 		}
 	})
 }

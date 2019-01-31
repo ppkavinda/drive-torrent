@@ -31,22 +31,22 @@ func init() {
 	gob.RegisterName("*server.Profile", &profile.Profile{})
 }
 
-func loginHandler(w http.ResponseWriter, r *http.Request) *appError {
+func loginHandler(w http.ResponseWriter, r *http.Request) {
 	sessionID := uuid.Must(uuid.NewV4()).String()
 	oauthFlowSession, err := SessionStore.New(r, sessionID)
 	if err != nil {
-		return appErrorf(err, "could not create oauth session: %v", err)
+		fmt.Printf("could not create oauth session: %v\n", err)
 	}
 	oauthFlowSession.Options.MaxAge = 10 * 60 // 10 minutes
 
 	redirectURL, err := validateRedirectURL(r.FormValue("redirect"))
 	if err != nil {
-		return appErrorf(err, "invalid redirect URL: %v", err)
+		fmt.Printf("invalid redirect URL: %v\n", err)
 	}
 	oauthFlowSession.Values[oauthFlowRedirectKey] = redirectURL
 
 	if err := oauthFlowSession.Save(r, w); err != nil {
-		return appErrorf(err, "could not save session: %v", err)
+		fmt.Printf("could not save session: %v", err)
 	}
 
 	// // Use the session ID for the "state" parameter.
@@ -56,7 +56,6 @@ func loginHandler(w http.ResponseWriter, r *http.Request) *appError {
 		oauth2.AccessTypeOnline)
 	http.Redirect(w, r, url, http.StatusFound)
 	// fmt.Println("redirectURL", redirectURL)
-	return nil
 }
 
 // validateRedirectURL checks that the URL provided is valid.
@@ -80,70 +79,69 @@ func validateRedirectURL(path string) (string, error) {
 }
 
 // logoutHandler clears the default session.
-func logoutHandler(w http.ResponseWriter, r *http.Request) *appError {
+func logoutHandler(w http.ResponseWriter, r *http.Request) {
 	session, err := SessionStore.New(r, defaultSessionID)
 	if err != nil {
-		return appErrorf(err, "could not get default session: %v", err)
+		fmt.Printf("could not get default session: %v\n", err)
 	}
 	session.Options.MaxAge = -1 // Clear session.
 	if err := session.Save(r, w); err != nil {
-		return appErrorf(err, "could not save session: %v", err)
+		fmt.Printf("could not save session: %v\n", err)
 	}
 	redirectURL := r.FormValue("redirect")
 	if redirectURL == "" {
 		redirectURL = "/"
 	}
 	http.Redirect(w, r, redirectURL, http.StatusFound)
-	return nil
 }
 
 // oauthCallbackHandler completes the OAuth flow, retreives the user's profile
 // information and stores it in a session.
-func oauthCallbackHandler(w http.ResponseWriter, r *http.Request) *appError {
+func oauthCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	oauthFlowSession, err := SessionStore.Get(r, r.FormValue("state"))
 	if err != nil {
-		return appErrorf(err, "invalid state parameter. try logging in again.")
+		fmt.Printf("invalid state parameter. try logging in again. %+v\n", err)
 	}
 
 	redirectURL, ok := oauthFlowSession.Values[oauthFlowRedirectKey].(string)
 	// Validate this callback request came from the app.
 	if !ok {
-		return appErrorf(err, "invalid state parameter. try logging in again.")
+		fmt.Printf("invalid state parameter. try logging in again. %+v\n", err)
 	}
 
 	code := r.FormValue("code")
 	tok, err := OAuthConfig.Exchange(context.Background(), code)
 	if err != nil {
-		return appErrorf(err, "could not get auth token: %v", err)
+		fmt.Printf("could not get auth token: %v\n", err)
 	}
 
 	session, err := SessionStore.Get(r, defaultSessionID)
 	if err != nil {
-		return appErrorf(err, "could not get default session: %v", err)
+		fmt.Printf("could not get default session: %v\n", err)
 	}
 
 	ctx := context.Background()
 	profile, err := fetchProfile(ctx, tok)
 	if err != nil {
-		return appErrorf(err, "could not fetch Google profile: %v", err)
+		fmt.Printf("could not fetch Google profile: %v\n", err)
 	}
 
 	session.Values[oauthTokenSessionKey] = tok
 	// Strip the profile to only the fields we need. Otherwise the struct is too big.
 	session.Values[googleProfileSessionKey] = stripProfile(profile)
 	if err := session.Save(r, w); err != nil {
-		return appErrorf(err, "could not save session: %v", err)
+		fmt.Printf("could not save session: %v\n", err)
 	}
 
 	tokenFile := profile.User.EmailAddress + ".json"
 	saveToken(path.Join("./tokens", tokenFile), tok)
 
 	http.Redirect(w, r, redirectURL, http.StatusFound)
-	return nil
 }
 
 // Saves a token to a file path.
 func saveToken(path string, token *oauth2.Token) {
+	fmt.Printf("Token: %+v\n", token)
 	fmt.Printf("Saving credential file to: %s\n", path)
 	f, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0600)
 	if err != nil {

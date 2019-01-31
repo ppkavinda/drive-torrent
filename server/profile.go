@@ -14,7 +14,7 @@ import (
 
 // return the user details
 // null if not logged in
-func userHandler(w http.ResponseWriter, r *http.Request) *appError {
+func userHandler(w http.ResponseWriter, r *http.Request) {
 
 	js, err := json.Marshal(GetUser())
 	if err != nil {
@@ -23,7 +23,6 @@ func userHandler(w http.ResponseWriter, r *http.Request) *appError {
 
 	w.Header().Set("content-type", "application/json")
 	w.Write(js)
-	return nil
 }
 
 // fetchProfile retrieves the GDrive profile of the user associated with the

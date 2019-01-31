@@ -12,7 +12,6 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/rs/cors"
 
 	// _ "github.com/mattn/go-sqlite3"
 	"github.com/ppkavinda/drive-torrent/db"
@@ -86,7 +85,7 @@ func (s *Server) Start() error {
 	}
 
 	r := mux.NewRouter()
-	_ = registerRoutes(s, r)
+	r = getRoutes(s, r)
 
 	// cors := cors.New(cors.Options{
 	// 	AllowedOrigins: []string{
@@ -94,7 +93,7 @@ func (s *Server) Start() error {
 	// 	},
 	// 	Debug: true,
 	// })
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), cors.Default().Handler(r)))
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), nil))
 	return nil
 }
 
@@ -114,7 +113,7 @@ func (s *Server) reconfig(c engine.Config) *appError {
 }
 
 // http://blog.golang.org/error-handling-and-go
-type appHandler func(http.ResponseWriter, *http.Request) *appError
+// type appHandler func(http.ResponseWriter, *http.Request) *appError
 
 type appError struct {
 	Error   error
@@ -122,14 +121,14 @@ type appError struct {
 	Code    int
 }
 
-func (fn appHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if e := fn(w, r); e != nil { // e is *appError, not os.Error.
-		log.Printf("Handler error: status code: %d, message: %s, underlying err: %#v",
-			e.Code, e.Message, e.Error)
+// func (fn appHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+// 	if e := fn(w, r); e != nil { // e is *appError, not os.Error.
+// 		log.Printf("Handler error: status code: %d, message: %s, underlying err: %#v",
+// 			e.Code, e.Message, e.Error)
 
-		http.Error(w, e.Message, e.Code)
-	}
-}
+// 		http.Error(w, e.Message, e.Code)
+// 	}
+// }
 
 func appErrorf(err error, format string, v ...interface{}) *appError {
 	return &appError{
