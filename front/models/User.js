@@ -5,7 +5,7 @@ export default class User {
         this.ImageURL = imageURL
         this.Email = email
     }
-    isLoggedIn () {
-        return this.ID != undefined
+    isLoggedIn() {
+        return (this.ID) ? true : false
     }
 }

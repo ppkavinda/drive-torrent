@@ -69,7 +69,8 @@ func (e *Engine) Config(c Config) error {
 func (e *Engine) NewMagnet(magnetURI, email string) error {
 	torrent, err := e.client.AddMagnet(magnetURI)
 	if err != nil {
-		fmt.Printf("DONE2 %v\n", err)
+
+		fmt.Printf("NewMagnet %v : %+v\n", err, magnetURI)
 
 		return err
 	}

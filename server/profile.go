@@ -74,21 +74,21 @@ func ProfileFromSession(r *http.Request) *profile.Profile {
 // GetUser : getter for User variable
 // if nil check session
 func GetUser() *profile.Profile {
-	if profile.User == nil {
-		session, _ := SessionStore.Get(Request, defaultSessionID)
+	// if profile.User == nil {
+	// session, _ := SessionStore.Get(Request, defaultSessionID)
 
-		user := session.Values[googleProfileSessionKey]
-		if session.IsNew {
-			return nil
-		}
+	// user := session.Values[googleProfileSessionKey]
+	// profile.User = &profile.Profile{
+	// 	ID:          user.(*profile.Profile).ID,
+	// 	DisplayName: user.(*profile.Profile).DisplayName,
+	// 	ImageURL:    user.(*profile.Profile).ImageURL,
+	// 	Email:       user.(*profile.Profile).Email,
+	// }
+	user := ProfileFromSession(Request)
 
-		profile.User = &profile.Profile{
-			ID:          user.(*profile.Profile).ID,
-			DisplayName: user.(*profile.Profile).DisplayName,
-			ImageURL:    user.(*profile.Profile).ImageURL,
-			Email:       user.(*profile.Profile).Email,
-		}
+	if user == nil {
+		return &profile.Profile{}
 	}
 
-	return profile.User
+	return user
 }

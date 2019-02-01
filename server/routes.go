@@ -2,7 +2,6 @@ package server
 
 import (
 	"encoding/json"
-	"fmt"
 	"html/template"
 	"net/http"
 	"os"
@@ -21,7 +20,8 @@ func getRoutes(s *Server, r *mux.Router) *mux.Router {
 				return string(a)
 			},
 		}).ParseFiles("static/index.html"))
-		fmt.Printf("%+v\n", t.Execute(w, GetUser()))
+		t.Execute(w, GetUser())
+		// fmt.Printf("%+v\n", t.Execute(w, GetUser()))
 	})
 
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static/"))))

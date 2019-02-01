@@ -1,6 +1,6 @@
 import Vue from 'vue'
-import axios from 'axios'
 import App from './app.vue'
+import router from './router'
 
 import User from './models/User'
 
@@ -11,5 +11,6 @@ window.axios.defaults.headers.common['X-Requested-With'] = "xmlhttprequest"
 
 new Vue({
     components:{App},
+    router,
     el: "#app"
 })

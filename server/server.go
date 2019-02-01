@@ -58,7 +58,7 @@ func (s *Server) Start() error {
 	}
 
 	if err := s.reconfig(c); err != nil {
-		return err.Error
+		return err
 		// return appErrorf(err, "Unable to Configure %v", err)
 	}
 	//poll torrents and files
@@ -87,24 +87,20 @@ func (s *Server) Start() error {
 	r := mux.NewRouter()
 	r = getRoutes(s, r)
 
-	// cors := cors.New(cors.Options{
-	// 	AllowedOrigins: []string{
-	// 		"http://localhost:3001",
-	// 	},
-	// 	Debug: true,
-	// })
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), nil))
 	return nil
 }
 
-func (s *Server) reconfig(c engine.Config) *appError {
+func (s *Server) reconfig(c engine.Config) error {
 	dldir, err := filepath.Abs(c.DownloadDirectory)
 	if err != nil {
-		return appErrorf(err, "Invalid Path %v", err)
+		fmt.Printf("Invalid Path %v\n", err)
+		return err
 	}
 	c.DownloadDirectory = dldir
 	if err := s.engine.Config(c); err != nil {
-		return appErrorf(err, "Unable to configure: %v", err)
+		fmt.Printf("Unable to configure: %v\n", err)
+		return err
 	}
 	b, _ := json.MarshalIndent(&c, "", " ")
 	ioutil.WriteFile(s.ConfigPath, b, 0755)
@@ -115,11 +111,11 @@ func (s *Server) reconfig(c engine.Config) *appError {
 // http://blog.golang.org/error-handling-and-go
 // type appHandler func(http.ResponseWriter, *http.Request) *appError
 
-type appError struct {
-	Error   error
-	Message string
-	Code    int
-}
+// type appError struct {
+// 	Error   error
+// 	Message string
+// 	Code    int
+// }
 
 // func (fn appHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // 	if e := fn(w, r); e != nil { // e is *appError, not os.Error.
@@ -130,10 +126,10 @@ type appError struct {
 // 	}
 // }
 
-func appErrorf(err error, format string, v ...interface{}) *appError {
-	return &appError{
-		Error:   err,
-		Message: fmt.Sprintf(format, v...),
-		Code:    500,
-	}
-}
+// func appErrorf(err error, format string, v ...interface{}) *appError {
+// 	return &appError{
+// 		Error:   err,
+// 		Message: fmt.Sprintf(format, v...),
+// 		Code:    500,
+// 	}
+// }
