@@ -72,7 +72,9 @@ func (s *Server) newMagnetHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = s.engine.NewMagnet(magnet.Magnet, GetUser().Email)
 	// fmt.Fprintf(w, "INFO4 %v", err)
-	appError.WriteAsJSON(w, err, err.Error(), 0, 422)
+	if err != nil {
+		appError.WriteAsJSON(w, err, err.Error(), 0, 422)
+	}
 }
 
 func newTorrentFormHandler(w http.ResponseWriter, r *http.Request) {

@@ -2277,17 +2277,17 @@ __webpack_require__.r(__webpack_exports__);
           magnet: magnet
         }).then(function (res) {
           _this.error = {
-            msg: '',
-            color: ''
+            msg: "",
+            color: ""
           };
           _this.torrent = {
-            url: '',
+            url: "",
             valid: true,
-            type: ''
+            type: ""
           };
         }).catch(function (err) {
           _this.error.msg = err.response.data.Message;
-          _this.error.color = 'red';
+          _this.error.color = "red";
           _this.torrent.valid = false;
         });
       } else if (this.torrent.type === "url") {
@@ -2296,17 +2296,17 @@ __webpack_require__.r(__webpack_exports__);
           url: url
         }).then(function (res) {
           _this.error = {
-            msg: '',
-            color: ''
+            msg: "",
+            color: ""
           };
           _this.torrent = {
-            url: '',
+            url: "",
             valid: true,
-            type: ''
+            type: ""
           };
         }).catch(function (err) {
           _this.error.msg = err.response.data.Message;
-          _this.error.color = 'red';
+          _this.error.color = "red";
           _this.torrent.valid = false;
         });
       }

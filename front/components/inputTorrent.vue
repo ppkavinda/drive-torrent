@@ -77,26 +77,26 @@ export default {
         axios
           .post("/new/magnet", { magnet })
           .then(res => {
-            this.error = {msg:'', color:''}
-            this.torrent = {url: '', valid: true, type: ''}
+            this.error = { msg: "", color: "" };
+            this.torrent = { url: "", valid: true, type: "" };
           })
           .catch(err => {
             this.error.msg = err.response.data.Message;
-            this.error.color = 'red'
-            this.torrent.valid = false
+            this.error.color = "red";
+            this.torrent.valid = false;
           });
       } else if (this.torrent.type === "url") {
         let url = this.torrent.url;
         axios
           .post("/new/url", { url })
           .then(res => {
-            this.error = {msg:'', color:''}
-            this.torrent = {url: '', valid: true, type: ''}
+            this.error = { msg: "", color: "" };
+            this.torrent = { url: "", valid: true, type: "" };
           })
           .catch(err => {
             this.error.msg = err.response.data.Message;
-            this.error.color = 'red'
-            this.torrent.valid = false
+            this.error.color = "red";
+            this.torrent.valid = false;
           });
       }
     }

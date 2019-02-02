@@ -46,48 +46,50 @@ func tokenFromFile(file string) (*oauth2.Token, error) {
 }
 
 func (s *Server) uploadFiles(infohash string) {
-	email := db.GetEmailOfTorrent(infohash)
+	emails := db.GetEmailOfTorrent(infohash)
+	for _, email := range emails {
+		files := s.engine.GetFiles(infohash)
+		client := getClient(OAuthConfig, email)
 
-	files := s.engine.GetFiles(infohash)
-	client := getClient(OAuthConfig, email)
+		srv, err := drive.New(client)
+		if err != nil {
+			log.Fatalf("Unable to retrieve Drive client: %v", err)
+		}
 
-	srv, err := drive.New(client)
-	if err != nil {
-		log.Fatalf("Unable to retrieve Drive client: %v", err)
-	}
+		// var parentName []string
+		parentName := strings.Split(files[0].Path, "/")
+		if len(files) > 1 {
 
-	// var parentName []string
-	parentName := strings.Split(files[0].Path, "/")
-	if len(files) > 1 {
+			for _, file := range files {
+				// fullPath := filepath.Join("./downloads", file.Path)
+				fileName := filepath.Base(file.Path)
+				folders := strings.TrimSuffix(file.Path, "/"+fileName)
 
-		for _, file := range files {
-			// fullPath := filepath.Join("./downloads", file.Path)
-			fileName := filepath.Base(file.Path)
-			folders := strings.TrimSuffix(file.Path, "/"+fileName)
-
-			parentID := getOrCreateDriveFolder(srv, "drive-torrent", "")
-			for _, fldrName := range strings.Split(folders, "/") {
-				parentID = getOrCreateDriveFolder(srv, fldrName, parentID)
+				parentID := getOrCreateDriveFolder(srv, "drive-torrent", "")
+				for _, fldrName := range strings.Split(folders, "/") {
+					parentID = getOrCreateDriveFolder(srv, fldrName, parentID)
+				}
+				_, err = uploadToDrive(srv, "", parentID, file)
+				if err != nil {
+					fmt.Printf("%+v\n", err)
+				}
 			}
-			_, err = uploadToDrive(srv, "", parentID, file)
+		} else {
+			parentID := getOrCreateDriveFolder(srv, "drive-torrent", "")
+			_, err = uploadToDrive(srv, "", parentID, files[0])
 			if err != nil {
 				fmt.Printf("%+v\n", err)
 			}
 		}
-	} else {
-		parentID := getOrCreateDriveFolder(srv, "drive-torrent", "")
-		_, err = uploadToDrive(srv, "", parentID, files[0])
+		err = os.RemoveAll(filepath.Join("./downloads", parentName[0]))
 		if err != nil {
-			fmt.Printf("%+v\n", err)
+			fmt.Printf("Cannot Delete file %+v", err)
+			return
 		}
-	}
-	err = os.RemoveAll(filepath.Join("./downloads", parentName[0]))
-	if err != nil {
-		fmt.Printf("Cannot Delete file %+v", err)
-		return
+
 	}
 
-	err = s.engine.Delete(infohash)
+	err := s.engine.Delete(infohash)
 	if err != nil {
 		fmt.Printf("Cannot Delete file %+v", err)
 		return

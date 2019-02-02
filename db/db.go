@@ -9,7 +9,7 @@ import (
 )
 
 // GetEmailOfTorrent : get email of a torrent
-func GetEmailOfTorrent(infohash string) string {
+func GetEmailOfTorrent(infohash string) []string {
 	db, err := sql.Open("sqlite3", "./info.db")
 	if err != nil {
 		fmt.Printf("SQL: %v", err)
@@ -19,26 +19,39 @@ func GetEmailOfTorrent(infohash string) string {
 		log.Fatal(err)
 	}
 
-	var id, email string
-	err = stmt.QueryRow(infohash).Scan(&id, &email)
+	emails := make([]string, 1)
+	rows, err := stmt.Query(infohash)
+	if err != nil {
+		fmt.Printf("GetEmailOfTorrent %+v\n", err)
+		return nil
+	}
+	for rows.Next() {
+		var id, email string
+		err = rows.Scan(&id, &email)
+		if err != nil {
+			log.Printf("GetEmailOfTorrent %+v\n", err)
+			return nil
+		}
+		emails = append(emails, email)
+
+		stmt, err = db.Prepare("delete from torrents where id = ?")
+		if err != nil {
+			log.Fatal(err)
+		}
+		_, err = stmt.Exec(id)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	stmt, err = db.Prepare("delete from torrents where id = ?")
-	if err != nil {
-		log.Fatal(err)
-	}
-	_, err = stmt.Exec(id)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Printf("FINISHED : %s\n", id)
+	// fmt.Printf("FINISHED : %s\n", id)
 
 	defer stmt.Close()
 	defer db.Close()
-	return email
+	return emails
 }
 
 // SaveInDb : save torrent and hash in sqlite
