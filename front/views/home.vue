@@ -3,6 +3,7 @@
     <div class="row">
       <div v-if="user.isLoggedIn()">
         <input-torrent></input-torrent>
+        <torrents></torrents>
       </div>
 
       <div v-else v-cloak class="valign-wrapper">
@@ -16,9 +17,10 @@
 
 <script>
 import InputTorrent from '../components/inputTorrent'
+import Torrents from '../components/torrents'
 
 export default {
-  components: {InputTorrent},
+  components: {InputTorrent, Torrents},
   data() {
     return {
       user: window.User

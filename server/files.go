@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/ppkavinda/drive-torrent/db"
+	"github.com/ppkavinda/drive-torrent/engine"
 	"golang.org/x/oauth2"
 	"google.golang.org/api/drive/v3"
 )
@@ -94,4 +95,21 @@ func (s *Server) uploadFiles(infohash string) {
 		fmt.Printf("Cannot Delete file %+v", err)
 		return
 	}
+}
+
+func (s *Server) getTorrentsOfEmail(email string) []engine.Torrent {
+	hashes := db.GetHashesOfEmail(email)
+	var torrents []engine.Torrent
+	torrents = make([]engine.Torrent, 1)
+
+	for _, hash := range hashes {
+		// torrents = append(torrents, s.state.Torrents[hash])
+		torrent := s.state.Torrents[hash]
+		if torrent != nil {
+			torrents = append(torrents, *torrent)
+		}
+
+	}
+
+	return torrents
 }

@@ -8,6 +8,41 @@ import (
 	"github.com/anacrolix/torrent"
 )
 
+// GetTorrentsOfEmail : return torrents of particular email
+func GetHashesOfEmail(email string) []string {
+	db, err := sql.Open("sqlite3", "./info.db")
+	if err != nil {
+		fmt.Printf("SQL: %v", err)
+	}
+	stmt, err := db.Prepare("select hash from torrents where email = ?")
+	if err != nil {
+		log.Fatal(err)
+	}
+	torrents := make([]string, 1)
+	rows, err := stmt.Query(email)
+	if err != nil {
+		fmt.Printf("GetTorrentOfEmail %+v\n", err)
+		return nil
+	}
+	for rows.Next() {
+		var hash string
+		err = rows.Scan(&hash)
+		if err != nil {
+			log.Printf("GetEmailOfTorrent %+v\n", err)
+			return nil
+		}
+		torrents = append(torrents, hash)
+	}
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer stmt.Close()
+	defer db.Close()
+	return torrents
+}
+
 // GetEmailOfTorrent : get email of a torrent
 func GetEmailOfTorrent(infohash string) []string {
 	db, err := sql.Open("sqlite3", "./info.db")

@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	"golang.org/x/net/websocket"
 
 	// _ "github.com/mattn/go-sqlite3"
 	"github.com/ppkavinda/drive-torrent/db"
@@ -86,6 +87,8 @@ func (s *Server) Start() error {
 
 	r := mux.NewRouter()
 	r = getRoutes(s, r)
+
+	http.Handle("/sync", websocket.Handler(s.SocketHandler))
 
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), nil))
 	return nil
