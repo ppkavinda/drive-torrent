@@ -88,3 +88,25 @@ func newTorrentFormHandler(w http.ResponseWriter, r *http.Request) {
 func (s *Server) getTorrentsHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("INFO %v\n", s.engine.GetTorrents())
 }
+
+func (s *Server) removeTorrent(w http.ResponseWriter, r *http.Request) {
+	type Hash struct {
+		Hash string
+	}
+	decoder := json.NewDecoder(r.Body)
+	var hash Hash
+	err := decoder.Decode(&hash)
+	if err != nil {
+		fmt.Printf("removeTorrentHandler: %+v\n", err)
+		return
+	}
+
+	fmt.Printf("hash: %+v\n", hash.Hash)
+
+	err = s.engine.Delete(hash.Hash)
+	if err != nil {
+		fmt.Printf("removeTorrentHandler: %+v\n", err)
+		return
+	}
+
+}

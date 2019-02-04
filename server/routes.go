@@ -31,6 +31,8 @@ func getRoutes(s *Server, r *mux.Router) *mux.Router {
 	r.Methods("POST").Path("/new/magnet").HandlerFunc(s.newMagnetHandler)
 	r.Methods("POST").Path("/new/url").HandlerFunc(s.newURLHandler)
 
+	r.Methods("POST").Path("/remove").HandlerFunc(s.removeTorrent)
+
 	r.Methods("GET").Path("/user").HandlerFunc(userHandler)
 
 	r.Methods("GET").Path("/login").HandlerFunc(loginHandler)
@@ -52,6 +54,8 @@ func getRoutes(s *Server, r *mux.Router) *mux.Router {
 	http.Handle("/new", IsLoggedIn(r))
 	http.Handle("/new/url", IsLoggedIn(r))
 	http.Handle("/new/magnet", IsLoggedIn(r))
+
+	http.Handle("/remove", IsLoggedIn(r))
 	// http.Handle("/user", IsLoggedIn(r))
 
 	r.Use(RegisterRequest)

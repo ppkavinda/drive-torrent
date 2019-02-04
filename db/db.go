@@ -8,27 +8,34 @@ import (
 	"github.com/anacrolix/torrent"
 )
 
-// GetTorrentsOfEmail : return torrents of particular email
+// GetHashesOfEmail : return torrents of particular email
 func GetHashesOfEmail(email string) []string {
 	db, err := sql.Open("sqlite3", "./info.db")
 	if err != nil {
 		fmt.Printf("SQL: %v", err)
 	}
+	defer db.Close()
+
 	stmt, err := db.Prepare("select hash from torrents where email = ?")
 	if err != nil {
+		fmt.Printf("GetHashesOfEmail1 %v\n", err)
 		log.Fatal(err)
 	}
+	defer stmt.Close()
+
 	torrents := make([]string, 1)
 	rows, err := stmt.Query(email)
 	if err != nil {
-		fmt.Printf("GetTorrentOfEmail %+v\n", err)
+		fmt.Printf("GetTorrentOfEmail2 %+v\n", err)
 		return nil
 	}
+	defer rows.Close()
+
 	for rows.Next() {
 		var hash string
 		err = rows.Scan(&hash)
 		if err != nil {
-			log.Printf("GetEmailOfTorrent %+v\n", err)
+			log.Printf("GetEmailOfTorrent3 %+v\n", err)
 			return nil
 		}
 		torrents = append(torrents, hash)
@@ -38,8 +45,6 @@ func GetHashesOfEmail(email string) []string {
 		log.Fatal(err)
 	}
 
-	defer stmt.Close()
-	defer db.Close()
 	return torrents
 }
 
@@ -49,43 +54,50 @@ func GetEmailOfTorrent(infohash string) []string {
 	if err != nil {
 		fmt.Printf("SQL: %v", err)
 	}
+	defer db.Close()
+
 	stmt, err := db.Prepare("select id, email from torrents where hash = ?")
 	if err != nil {
-		log.Fatal(err)
+		log.Printf("GetEmiailOfTorrent:1 %+v\n", err)
 	}
+	defer stmt.Close()
 
-	emails := make([]string, 1)
+	emails := make([]string, 0)
+	ids := make([]string, 0)
 	rows, err := stmt.Query(infohash)
 	if err != nil {
-		fmt.Printf("GetEmailOfTorrent %+v\n", err)
+		fmt.Printf("GetEmailOfTorrent2 %+v\n", err)
 		return nil
 	}
+	defer rows.Close()
+
 	for rows.Next() {
 		var id, email string
 		err = rows.Scan(&id, &email)
 		if err != nil {
-			log.Printf("GetEmailOfTorrent %+v\n", err)
+			log.Printf("GetEmailOfTorrent:3 select %+v\n", err)
 			return nil
 		}
 		emails = append(emails, email)
-
-		stmt, err = db.Prepare("delete from torrents where id = ?")
-		if err != nil {
-			log.Fatal(err)
-		}
-		_, err = stmt.Exec(id)
-		if err != nil {
-			log.Fatal(err)
-		}
+		ids = append(ids, id)
 	}
+	stmt2, err := db.Prepare("delete from torrents where id = ?")
 	if err != nil {
-		log.Fatal(err)
+		log.Printf("GetEmailOfTorrent:4 delete %+v\n", err)
+		return nil
+	}
+	defer stmt2.Close()
+
+	for _, id := range ids {
+		_, err = stmt2.Exec(id)
+		if err != nil {
+			fmt.Printf("GetTorrentOfEmail5 %+v\n", err)
+
+		}
 	}
 
 	// fmt.Printf("FINISHED : %s\n", id)
 
-	defer stmt.Close()
-	defer db.Close()
 	return emails
 }
 

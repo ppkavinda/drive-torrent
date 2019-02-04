@@ -48,8 +48,13 @@ func tokenFromFile(file string) (*oauth2.Token, error) {
 
 func (s *Server) uploadFiles(infohash string) {
 	emails := db.GetEmailOfTorrent(infohash)
+	files := s.engine.GetFiles(infohash)
+	parentName := strings.Split(files[0].Path, "/")
+
 	for _, email := range emails {
-		files := s.engine.GetFiles(infohash)
+		fmt.Printf("uploading to :: %+v\n", email)
+		// continue
+
 		client := getClient(OAuthConfig, email)
 
 		srv, err := drive.New(client)
@@ -58,7 +63,6 @@ func (s *Server) uploadFiles(infohash string) {
 		}
 
 		// var parentName []string
-		parentName := strings.Split(files[0].Path, "/")
 		if len(files) > 1 {
 
 			for _, file := range files {
@@ -82,15 +86,15 @@ func (s *Server) uploadFiles(infohash string) {
 				fmt.Printf("%+v\n", err)
 			}
 		}
-		err = os.RemoveAll(filepath.Join("./downloads", parentName[0]))
-		if err != nil {
-			fmt.Printf("Cannot Delete file %+v", err)
-			return
-		}
 
 	}
+	err := os.RemoveAll(filepath.Join("./downloads", parentName[0]))
+	if err != nil {
+		fmt.Printf("Cannot Delete file %+v", err)
+		return
+	}
 
-	err := s.engine.Delete(infohash)
+	err = s.engine.Delete(infohash)
 	if err != nil {
 		fmt.Printf("Cannot Delete file %+v", err)
 		return
@@ -100,7 +104,7 @@ func (s *Server) uploadFiles(infohash string) {
 func (s *Server) getTorrentsOfEmail(email string) []engine.Torrent {
 	hashes := db.GetHashesOfEmail(email)
 	var torrents []engine.Torrent
-	torrents = make([]engine.Torrent, 1)
+	torrents = make([]engine.Torrent, 0)
 
 	for _, hash := range hashes {
 		// torrents = append(torrents, s.state.Torrents[hash])

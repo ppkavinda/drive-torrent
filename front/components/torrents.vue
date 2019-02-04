@@ -1,6 +1,16 @@
 <template>
   <div>
     <h4>Torrents</h4>
+    <ul class="collection with-header">
+      <li v-for="(torrent, i) in torrents" :key="i" class="collection-item">
+        <div>{{ torrent.Name }} : {{ torrent.Percent }}%
+          <a @click="remove(torrent.InfoHash)" class="secondary-content red-text">
+              Remove
+            <i class="material-icons"> delete_perminantly</i>
+          </a>
+        </div>
+      </li>
+    </ul>
   </div>
 </template>
 
@@ -9,9 +19,9 @@ export default {
   data() {
     return {
       msg: "",
-      torrents: [],
-    //   wsuri: "ws://localhost:3000/sync",
-    //   sock: new WebSocket('ws://localhost:3000/sync')
+      torrents: []
+      //   wsuri: "ws://localhost:3000/sync",
+      //   sock: new WebSocket('ws://localhost:3000/sync')
     };
   },
   methods: {
@@ -19,18 +29,18 @@ export default {
       let msg = window.sock.send(this.msg);
     }
   },
+  methods: {
+      remove(hash) {
+          axios.post("/remove", {hash})
+          .then(e => console.log(e))
+      },
+  },
   mounted() {
 
-    window.sock.onopen = function() {
-      console.log("connected to " + this.wsuri);
-    };
-    window.sock.onclose = function(e) {
-      console.log("connection closed " + e.data);
-    };
-    window.sock.onmessage = function(e) {
-    //   console.log(JSON.stringify(e.data));
-      console.log(e.data);
-    };
+    window.sock.on("sync-torrent", e => {
+      console.log(e);
+      this.torrents = e;
+    });
   }
 };
 </script>

@@ -69,9 +69,7 @@ func (e *Engine) Config(c Config) error {
 func (e *Engine) NewMagnet(magnetURI, email string) error {
 	torrent, err := e.client.AddMagnet(magnetURI)
 	if err != nil {
-
 		fmt.Printf("NewMagnet %v : %+v\n", err, magnetURI)
-
 		return err
 	}
 
@@ -215,8 +213,8 @@ func (e *Engine) saveTorrent(newTorrent *torrent.Torrent) *Torrent {
 
 // GetFiles : returns the relatent files of a torrent hash
 func (e *Engine) GetFiles(hash string) []*File {
-	for i, v := range e.ts[hash].Files {
-		fmt.Printf("%d: %+v\n", i, *v)
-	}
+	// for i, v := range e.ts[hash].Files {
+	// fmt.Printf("%d: %+v\n", i, *v)
+	// }
 	return e.ts[hash].Files
 }

@@ -19,7 +19,7 @@ func getClient(config *oauth2.Config, email string) *http.Client {
 	tokFile := filepath.Join("./tokens/", email+".json")
 	tok, err := tokenFromFile(tokFile)
 	if err != nil {
-		fmt.Printf("Couldn't get Token\n")
+		fmt.Printf("Couldn't get Token: %+v\n", err)
 		return nil
 		// tok = getTokenFromWeb(config)
 		// saveToken(tokFile, tok)

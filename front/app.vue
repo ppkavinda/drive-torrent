@@ -22,6 +22,11 @@ export default {
 
     this.user = new User(user.ID, user.DisplayName, user.ImageURL, user.Email);
     window.User = this.user;
+    window.sock.on("login-status", res => {
+      // Vue.set(window.User, ID, res.ID);
+      window.User.ID = res.ID
+      console.log(res)
+    });
   }
 };
 </script>
