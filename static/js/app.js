@@ -400,7 +400,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-window.User = new _models_User__WEBPACK_IMPORTED_MODULE_3__["default"]();
+window.User = new _models_User__WEBPACK_IMPORTED_MODULE_3__["default"](); // window.sock = new Socket('ws://10.22.167.160:3000/sync');
+
 window.sock = new _models_Socket__WEBPACK_IMPORTED_MODULE_4__["default"]('ws://localhost:3000/sync'); // window.sock = new WebSocket('ws://localhost:3000/sync')
 
 window.axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
