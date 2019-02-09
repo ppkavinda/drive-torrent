@@ -12,7 +12,8 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	"golang.org/x/net/websocket"
+
+	// "golang.org/x/net/websocket"
 
 	// _ "github.com/mattn/go-sqlite3"
 	"github.com/ppkavinda/drive-torrent/db"
@@ -62,6 +63,12 @@ func (s *Server) Start() error {
 		return err
 		// return appErrorf(err, "Unable to Configure %v", err)
 	}
+
+	// for _, hash := range db.GetAllTorrentHashes() {
+	// 	s.engine.Start(hash)
+	// 	fmt.Printf("%+v\n", hash)
+	// }
+
 	//poll torrents and files
 	go func() {
 		for {
@@ -88,7 +95,8 @@ func (s *Server) Start() error {
 	r := mux.NewRouter()
 	r = getRoutes(s, r)
 
-	http.Handle("/sync", websocket.Handler(s.SocketHandler))
+	// http.Handle("/sync", websocket.Handler(s.SocketHandler))
+	http.HandleFunc("/sync", s.SocketHandler)
 
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), nil))
 	return nil

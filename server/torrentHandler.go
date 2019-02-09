@@ -6,12 +6,14 @@ import (
 	"fmt"
 	"html/template"
 	"io/ioutil"
+	"log"
 	"net/http"
 
 	"github.com/anacrolix/torrent"
 	"github.com/anacrolix/torrent/metainfo"
 
 	"github.com/ppkavinda/drive-torrent/appError"
+	"github.com/ppkavinda/drive-torrent/db"
 )
 
 func (s *Server) newURLHandler(w http.ResponseWriter, r *http.Request) {
@@ -49,7 +51,7 @@ func (s *Server) newURLHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	spec := torrent.TorrentSpecFromMetaInfo(info)
-	if err := s.engine.NewTorrentFromSpec(spec); err != nil {
+	if err := s.engine.NewTorrentFromSpec(spec, GetUser(r).Email); err != nil {
 		fmt.Printf("Torrent Error: %+v\n", err)
 		appError.WriteAsJSON(w, err, "Unable to load torrent", 0, 422)
 		return
@@ -70,7 +72,7 @@ func (s *Server) newMagnetHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = s.engine.NewMagnet(magnet.Magnet, GetUser().Email)
+	err = s.engine.NewMagnet(magnet.Magnet, GetUser(r).Email)
 	// fmt.Fprintf(w, "INFO4 %v", err)
 	if err != nil {
 		appError.WriteAsJSON(w, err, err.Error(), 0, 422)
@@ -82,11 +84,46 @@ func newTorrentFormHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Fprintf(w, "%v", err)
 	}
-	tmpl.Execute(w, GetUser())
+	tmpl.Execute(w, GetUser(r))
 }
 
 func (s *Server) getTorrentsHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("INFO %v\n", s.engine.GetTorrents())
+}
+
+func (s *Server) startTorrent(w http.ResponseWriter, r *http.Request) {
+	type Hash struct {
+		Hash string
+	}
+	decoder := json.NewDecoder(r.Body)
+	var hash Hash
+	err := decoder.Decode(&hash)
+	if err != nil {
+		fmt.Printf("startTorrent: %+v\n", err)
+		return
+	}
+	err = s.engine.StartTorrent(hash.Hash)
+	if err != nil {
+		fmt.Printf("startTorrent2: %+v\n", err)
+		return
+	}
+}
+func (s *Server) stopTorrent(w http.ResponseWriter, r *http.Request) {
+	type Hash struct {
+		Hash string
+	}
+	decoder := json.NewDecoder(r.Body)
+	var hash Hash
+	err := decoder.Decode(&hash)
+	if err != nil {
+		fmt.Printf("stopTorrent: %+v\n", err)
+		return
+	}
+	err = s.engine.Stop(hash.Hash)
+	if err != nil {
+		fmt.Printf("stopTorrent2: %+v\n", err)
+		return
+	}
 }
 
 func (s *Server) removeTorrent(w http.ResponseWriter, r *http.Request) {
@@ -101,12 +138,17 @@ func (s *Server) removeTorrent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Printf("hash: %+v\n", hash.Hash)
-
 	err = s.engine.Delete(hash.Hash)
 	if err != nil {
 		fmt.Printf("removeTorrentHandler: %+v\n", err)
 		return
 	}
+
+	err = db.DeleteTorrent(hash.Hash, GetUser(r).Email)
+	if err != nil {
+		fmt.Printf("Delete Torrent: %+v\n", err)
+		return
+	}
+	log.Printf("deleted torrent: %+v\n", hash.Hash)
 
 }

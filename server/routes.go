@@ -20,7 +20,7 @@ func getRoutes(s *Server, r *mux.Router) *mux.Router {
 				return string(a)
 			},
 		}).ParseFiles("static/index.html"))
-		t.Execute(w, GetUser())
+		t.Execute(w, GetUser(r))
 		// fmt.Printf("%+v\n", t.Execute(w, GetUser()))
 	})
 
@@ -31,7 +31,9 @@ func getRoutes(s *Server, r *mux.Router) *mux.Router {
 	r.Methods("POST").Path("/new/magnet").HandlerFunc(s.newMagnetHandler)
 	r.Methods("POST").Path("/new/url").HandlerFunc(s.newURLHandler)
 
-	r.Methods("POST").Path("/remove").HandlerFunc(s.removeTorrent)
+	r.Methods("POST").Path("/torrent/stop").HandlerFunc(s.stopTorrent)
+	r.Methods("POST").Path("/torrent/remove").HandlerFunc(s.removeTorrent)
+	r.Methods("POST").Path("/torrent/start").HandlerFunc(s.startTorrent)
 
 	r.Methods("GET").Path("/user").HandlerFunc(userHandler)
 

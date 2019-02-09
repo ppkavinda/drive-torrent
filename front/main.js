@@ -6,9 +6,12 @@ import User from './models/User'
 import Socket from './models/Socket'
 
 window.User = new User
-// window.sock = new Socket('ws://10.22.167.160:3000/sync');
-window.sock = new Socket('ws://localhost:3000/sync');
-// window.sock = new WebSocket('ws://localhost:3000/sync')
+
+var loc = window.location, wsUri;
+loc.protocol === "https:" ? wsUri = "wss:": wsUri = "ws:"
+wsUri += "//" + loc.host;
+wsUri += loc.pathname + "sync";
+window.sock = new Socket(wsUri);
 
 
 window.axios = require('axios')

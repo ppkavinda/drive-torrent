@@ -400,10 +400,13 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-window.User = new _models_User__WEBPACK_IMPORTED_MODULE_3__["default"](); // window.sock = new Socket('ws://10.22.167.160:3000/sync');
-
-window.sock = new _models_Socket__WEBPACK_IMPORTED_MODULE_4__["default"]('ws://localhost:3000/sync'); // window.sock = new WebSocket('ws://localhost:3000/sync')
-
+window.User = new _models_User__WEBPACK_IMPORTED_MODULE_3__["default"]();
+var loc = window.location,
+    wsUri;
+loc.protocol === "https:" ? wsUri = "wss:" : wsUri = "ws:";
+wsUri += "//" + loc.host;
+wsUri += loc.pathname + "sync";
+window.sock = new _models_Socket__WEBPACK_IMPORTED_MODULE_4__["default"](wsUri);
 window.axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 window.axios.defaults.headers.common['X-Requested-With'] = "xmlhttprequest";
 new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
@@ -2599,10 +2602,6 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-var _data$methods$methods;
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 //
 //
 //
@@ -2619,36 +2618,65 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-/* harmony default export */ __webpack_exports__["default"] = (_data$methods$methods = {
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+/* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       msg: "",
-      torrents: [] //   wsuri: "ws://localhost:3000/sync",
-      //   sock: new WebSocket('ws://localhost:3000/sync')
-
+      torrents: []
     };
   },
   methods: {
     send: function send() {
       var msg = window.sock.send(this.msg);
+    },
+    start: function start(hash) {
+      axios.post('/torrent/start', {
+        hash: hash
+      }).then(function (e) {
+        return console.log(e);
+      });
+    },
+    stop: function stop(hash) {
+      axios.post('/torrent/stop', {
+        hash: hash
+      }).then(function (e) {
+        return console.log(e);
+      });
+    },
+    remove: function remove(hash) {
+      axios.post("/torrent/remove", {
+        hash: hash
+      }).then(function (e) {
+        return console.log(e);
+      });
+    },
+    progressStyle: function progressStyle(width) {
+      return {
+        width: width + '%'
+      };
     }
-  }
-}, _defineProperty(_data$methods$methods, "methods", {
-  remove: function remove(hash) {
-    axios.post("/remove", {
-      hash: hash
-    }).then(function (e) {
-      return console.log(e);
+  },
+  computed: {},
+  mounted: function mounted() {
+    var _this = this;
+
+    window.sock.on("sync-torrent", function (e) {
+      console.log(e);
+      _this.torrents = e;
     });
   }
-}), _defineProperty(_data$methods$methods, "mounted", function mounted() {
-  var _this = this;
-
-  window.sock.on("sync-torrent", function (e) {
-    console.log(e);
-    _this.torrents = e;
-  });
-}), _data$methods$methods);
+});
 
 /***/ }),
 
@@ -4510,40 +4538,93 @@ var render = function() {
   return _c("div", [
     _c("h4", [_vm._v("Torrents")]),
     _vm._v(" "),
-    _c(
-      "ul",
-      { staticClass: "collection with-header" },
-      _vm._l(_vm.torrents, function(torrent, i) {
-        return _c("li", { key: i, staticClass: "collection-item" }, [
-          _c("div", [
-            _vm._v(
-              _vm._s(torrent.Name) +
-                " : " +
-                _vm._s(torrent.Percent) +
-                "%\n        "
-            ),
-            _c(
-              "a",
-              {
-                staticClass: "secondary-content red-text",
-                on: {
-                  click: function($event) {
-                    _vm.remove(torrent.InfoHash)
+    _vm.torrents.length
+      ? _c(
+          "ul",
+          { staticClass: "collection with-header" },
+          _vm._l(_vm.torrents, function(torrent, i) {
+            return _c("li", { key: i, staticClass: "collection-item row" }, [
+              _c("div", { staticClass: "progress orange lighten-3" }, [
+                _c("div", {
+                  staticClass: "determinate orange darken-2",
+                  style: _vm.progressStyle(torrent.Percent)
+                })
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "col s6" }, [
+                _vm._v(
+                  "\n          " +
+                    _vm._s(torrent.Name) +
+                    " : " +
+                    _vm._s(torrent.Percent) +
+                    "% "
+                ),
+                _c("br"),
+                _vm._v(
+                  "\n           " +
+                    _vm._s(Number(torrent.DownloadRate / 1024).toFixed(2)) +
+                    " KB/s \n      "
+                )
+              ]),
+              _vm._v(" "),
+              _c(
+                "button",
+                {
+                  staticClass: "btn btn-small secondary-content green col s2",
+                  on: {
+                    click: function($event) {
+                      _vm.start(torrent.InfoHash)
+                    }
                   }
-                }
-              },
-              [
-                _vm._v("\n            Remove\n          "),
-                _c("i", { staticClass: "material-icons" }, [
-                  _vm._v(" delete_perminantly")
-                ])
-              ]
-            )
-          ])
-        ])
-      }),
-      0
-    )
+                },
+                [
+                  _vm._v("\n            Start "),
+                  _c("i", { staticClass: "material-icons" }, [
+                    _vm._v(" delete_perminantly")
+                  ])
+                ]
+              ),
+              _vm._v(" "),
+              _c(
+                "button",
+                {
+                  staticClass: "btn btn-small secondary-content orange col s2",
+                  on: {
+                    click: function($event) {
+                      _vm.stop(torrent.InfoHash)
+                    }
+                  }
+                },
+                [
+                  _vm._v("\n            Stop "),
+                  _c("i", { staticClass: "material-icons" }, [
+                    _vm._v(" delete_perminantly")
+                  ])
+                ]
+              ),
+              _vm._v(" "),
+              _c(
+                "button",
+                {
+                  staticClass: "btn btn-small secondary-content red col s2",
+                  on: {
+                    click: function($event) {
+                      _vm.remove(torrent.InfoHash)
+                    }
+                  }
+                },
+                [
+                  _vm._v("\n            Remove "),
+                  _c("i", { staticClass: "material-icons" }, [
+                    _vm._v(" delete_perminantly")
+                  ])
+                ]
+              )
+            ])
+          }),
+          0
+        )
+      : _c("span", [_vm._v("No Torrents yet!")])
   ])
 }
 var staticRenderFns = []

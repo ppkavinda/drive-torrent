@@ -107,6 +107,27 @@ func (torrent *Torrent) updateLoaded(t *torrent.Torrent) {
 	fmt.Printf("NOT FINISHED\n")
 }
 
+// Stop : stop torrent from being download
+func (e *Engine) Stop(infohash string) error {
+	t, err := e.getTorrent(infohash)
+	if err != nil {
+		fmt.Printf("Stop Torrent: %+v\n", err)
+		return err
+	}
+	if !t.Started {
+		fmt.Printf("Already stoped\n")
+		return err
+	}
+	t.t.Drop()
+	t.Started = false
+	for _, f := range t.Files {
+		if f != nil {
+			f.Started = false
+		}
+	}
+	return nil
+}
+
 // Delete : remove torrent from engine
 func (e *Engine) Delete(infohash string) error {
 	t, err := e.getTorrent(infohash)

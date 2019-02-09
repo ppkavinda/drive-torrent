@@ -79,12 +79,15 @@ func (e *Engine) NewMagnet(magnetURI, email string) error {
 }
 
 // NewTorrentFromSpec : add torrent from metaInfo
-func (e *Engine) NewTorrentFromSpec(spec *torrent.TorrentSpec) error {
+func (e *Engine) NewTorrentFromSpec(spec *torrent.TorrentSpec, email string) error {
 	tt, _, err := e.client.AddTorrentSpec(spec)
 	if err != nil {
 		fmt.Printf("NEW SPEC: %+v", err)
 		return err
 	}
+
+	db.SaveInDb(tt, email)
+
 	return e.newTorrent(tt)
 }
 func (e *Engine) newTorrent(torrent *torrent.Torrent) error {

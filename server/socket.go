@@ -3,97 +3,110 @@ package server
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"time"
 
-	"golang.org/x/net/websocket"
+	"github.com/gorilla/websocket"
 )
 
+// WsStruct : websocket data object
 type WsStruct struct {
 	Event string
 	Data  interface{}
 }
 
+const (
+	// Time allowed to write the file to the client.
+	writeWait = 10 * time.Second
+
+	// Time allowed to read the next pong message from the client.
+	pongWait = 60 * time.Second
+
+	// Send pings to client with this period. Must be less than pongWait.
+	pingPeriod = (pongWait * 9) / 10
+
+	// Poll file for changes with this period.
+	torrentPeriod = 2 * time.Second
+
+	loginPeriod = 3 * time.Second
+)
+
+var upgrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+}
+
 // SocketHandler : handler for socket connection
-func (s *Server) SocketHandler(ws *websocket.Conn) {
-	// var err error
-	// syncLogin(s, ws)
-	syncInitialTorrents(s, ws)
-	// syncNewTorrent(s, ws)
+func (s *Server) SocketHandler(w http.ResponseWriter, r *http.Request) {
+	ws, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		if _, ok := err.(websocket.HandshakeError); !ok {
+			fmt.Printf("SocketHandler: %+v", err)
+		}
+		return
+	}
 
-	// for {
-	// 	var reply string
-
-	// 	if err = websocket.Message.Receive(ws, &reply); err != nil {
-	// 		fmt.Println("Can't receive")
-	// 		break
-	// 	}
-
-	// 	fmt.Println("Received back from client: " + reply)
-
-	// 	msg := "Received:  "
-	// 	fmt.Println("Sending to client: " + msg)
-
-	// 	if err = websocket.Message.Send(ws, msg); err != nil {
-	// 		fmt.Println("Can't send")
-	// 		break
-	// 	}
-
-	// }
+	go writer(ws, r, s)
+	reader(ws)
 }
 
-func syncNewTorrent(s *Server, ws *websocket.Conn) {
+func writer(ws *websocket.Conn, r *http.Request, s *Server) {
+	pingTicker := time.NewTicker(pingPeriod)
+	torrentTicker := time.NewTicker(torrentPeriod)
+	loginTicker := time.NewTicker(loginPeriod)
+	fmt.Printf("ws Write\n")
 
-}
+	defer func() {
+		pingTicker.Stop()
+		torrentTicker.Stop()
+		ws.Close()
+	}()
 
-func syncInitialTorrents(s *Server, ws *websocket.Conn) {
-	func() {
-		for {
-			email := GetUser().Email
+	for {
+		select {
+		case <-torrentTicker.C:
+			ws.SetWriteDeadline(time.Now().Add(writeWait))
+			email := GetUser(r).Email
 			torrents := s.getTorrentsOfEmail(email)
 			js, err := json.Marshal(WsStruct{
 				"sync-torrent",
 				torrents,
 			})
+			err = ws.WriteMessage(websocket.TextMessage, js)
 			if err != nil {
-				fmt.Printf("Can't send1 %+v\n", err)
-				break
+				return
 			}
-			if err := websocket.Message.Send(ws, string(js)); err != nil {
-				fmt.Printf("Can't send2 %+v\n", err)
-				break
-			}
-			js, err = json.Marshal(WsStruct{
-				"login-status",
-				GetUser(),
+		case <-loginTicker.C:
+			ws.SetWriteDeadline(time.Now().Add(writeWait))
+			user := GetUser(r)
+			js, err := json.Marshal(WsStruct{
+				"sync-login",
+				user,
 			})
-			if err = websocket.Message.Send(ws, string(js)); err != nil {
-				fmt.Printf("Can't send2 %+v\n", err)
-				break
+			err = ws.WriteMessage(websocket.TextMessage, js)
+			if err != nil {
+				return
 			}
 
-			// fmt.Printf("sendTorrents: %+v\n", torrents)
-			// fmt.Printf("sendTorrents: js %s\n", js)
-			fmt.Print("syncTorrent\n")
-			time.Sleep(2 * time.Second)
+		case <-pingTicker.C:
+			ws.SetWriteDeadline(time.Now().Add(writeWait))
+			err := ws.WriteMessage(websocket.PingMessage, []byte{})
+			if err != nil {
+				return
+			}
 		}
-	}()
+	}
 }
 
-func syncLogin(s *Server, ws *websocket.Conn) {
-	go func() {
-		for {
-			time.Sleep(2 * time.Second)
-
-			one := []byte{}
-			// // ws.SetReadDeadline(time.Now())
-			if _, err := ws.Read(one); err != nil {
-				fmt.Printf("detected closed LAN connection %+v\n", err)
-				// 	// ws.Close()
-				// 	// ws = nil
-				break
-			}
-
-			fmt.Printf("syncLogin\n")
+func reader(ws *websocket.Conn) {
+	defer ws.Close()
+	ws.SetReadLimit(512)
+	ws.SetReadDeadline(time.Now().Add(pongWait))
+	ws.SetPongHandler(func(string) error { ws.SetReadDeadline(time.Now().Add(pongWait)); return nil })
+	for {
+		_, _, err := ws.ReadMessage()
+		if err != nil {
+			break
 		}
-	}()
+	}
 }

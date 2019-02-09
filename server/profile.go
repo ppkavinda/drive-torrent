@@ -15,7 +15,7 @@ import (
 // return the user details
 // null if not logged in
 func userHandler(w http.ResponseWriter, r *http.Request) {
-	user := GetUser()
+	user := GetUser(r)
 	js, err := json.Marshal(user)
 	if user == nil {
 		js = []byte("{}")
@@ -73,7 +73,7 @@ func ProfileFromSession(r *http.Request) *profile.Profile {
 
 // GetUser : getter for User variable
 // if nil check session
-func GetUser() *profile.Profile {
+func GetUser(r *http.Request) *profile.Profile {
 	// if profile.User == nil {
 	// session, _ := SessionStore.Get(Request, defaultSessionID)
 
@@ -84,7 +84,7 @@ func GetUser() *profile.Profile {
 	// 	ImageURL:    user.(*profile.Profile).ImageURL,
 	// 	Email:       user.(*profile.Profile).Email,
 	// }
-	user := ProfileFromSession(Request)
+	user := ProfileFromSession(r)
 
 	if user == nil {
 		return &profile.Profile{}

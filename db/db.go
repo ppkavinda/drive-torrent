@@ -128,7 +128,60 @@ func SaveInDb(torrent *torrent.Torrent, email string) {
 	}
 
 	tx.Commit()
+}
 
+// DeleteTorrent : delete torrent from sqlite database
+func DeleteTorrent(infohash, email string) error {
+	db, err := sql.Open("sqlite3", "./info.db")
+	if err != nil {
+		fmt.Printf("SQL: %v", err)
+	}
+	defer db.Close()
+	stmt2, err := db.Prepare("delete from torrents where hash = ?, and email = ?")
+	if err != nil {
+		log.Printf("GetEmailOfTorrent:4 delete %+v\n", err)
+		return nil
+	}
+	defer stmt2.Close()
+	_, err = stmt2.Exec(infohash, email)
+	if err != nil {
+		fmt.Printf("GetTorrentOfEmail5 %+v\n", err)
+	}
+	return nil
+}
+
+// GetAllTorrentHashes : return all torrents in sqlite db
+func GetAllTorrentHashes() []string {
+	db, err := sql.Open("sqlite3", "./info.db")
+	if err != nil {
+		fmt.Printf("SQL: %v", err)
+	}
+	defer db.Close()
+
+	stmt, err := db.Prepare("select hash from torrents")
+	if err != nil {
+		log.Printf("GetAllTorrentHashes:1 %+v\n", err)
+	}
+	defer stmt.Close()
+
+	hashes := make([]string, 0)
+	rows, err := stmt.Query()
+	if err != nil {
+		fmt.Printf("GetAllTorrnetHashes %+v\n", err)
+		return nil
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var hash string
+		err = rows.Scan(&hash)
+		if err != nil {
+			log.Printf("GetAllTorrentHashes:3 %+v\n", err)
+			return nil
+		}
+		hashes = append(hashes, hash)
+	}
+	return hashes
 }
 
 // SetupDB : create torrents table
@@ -142,7 +195,7 @@ func SetupDB() {
 
 	sqlStmt := `
 		create table if not exists torrents (
-			id integer auto_increment not null primary key,
+			id integer primary key,
 			name text,
 			hash text,
 			email text
