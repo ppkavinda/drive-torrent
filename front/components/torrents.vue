@@ -1,24 +1,29 @@
 <template>
   <div>
     <h4>Torrents</h4>
-    <ul v-if="torrents.length" class="collection with-header">
-      <li v-for="(torrent, i) in torrents" :key="i" class="collection-item row">
+    <ul v-if="torrents.length" class="collection">
+      <li style="margin-bottom:1em;" v-for="(torrent, i) in torrents" :key="i" :class="'collection-item row lighten-5 ' + getStatus(torrent)">
         <div class="progress orange lighten-3">
           <div class="determinate orange darken-2" :style="progressStyle(torrent.Percent)"></div>
         </div>
         <div class="col s6">
-            {{ torrent.Name }} : {{ torrent.Percent }}% <br>
+          <span v-if="torrentDownloading(torrent)"><i class="material-icons">file_download</i> Downloading</span>
+          <span v-if="torrentUploading(torrent)"><i class="material-icons">file_upload</i> Uploading</span>
+          <br>
+            {{ torrent.Name }} : <strong>{{ torrent.Percent }}%</strong> <br>
              {{ Number(torrent.DownloadRate / 1024 ).toFixed(2) }} KB/s 
         </div>
-        <button @click="start(torrent.InfoHash)" class="btn btn-small secondary-content green col s2">
-              Start <i class="material-icons"> delete_perminantly</i>
-        </button>
-        <button @click="stop(torrent.InfoHash)" class="btn btn-small secondary-content orange col s2">
-              Stop <i class="material-icons"> delete_perminantly</i>
-        </button>
-        <button @click="remove(torrent.InfoHash)" class="btn btn-small secondary-content red col s2">
-              Remove <i class="material-icons"> delete_perminantly</i>
-        </button>
+        <div class="right">
+        <a v-if="!torrent.Started" @click="start(torrent.InfoHash)" class="btn btn-small  waves-effect waves-light green">
+          Start <i class="material-icons right"> play_arrow</i>
+        </a>
+        <a v-if="torrent.Started" @click="stop(torrent.InfoHash)" class="btn waves-effect waves-light btn-small orange">
+          Stop <i class="material-icons right"> stop</i>
+        </a>
+        <a @click="remove(torrent.InfoHash)" class="waves-effect waves-light btn red">
+          <i class="material-icons right">delete</i>Remove
+        </a>
+        </div>
       </li>
     </ul>
     <span v-else>No Torrents yet!</span>
@@ -49,6 +54,23 @@ export default {
         axios.post("/torrent/remove", {hash})
         .then(e => console.log(e))
     },
+    getStatus(torrent) {
+      if (torrent.Started && !torrent.Finished) {
+        return 'orange'
+      } else if (torrent.Started && torrent.Finished) {
+        return 'green'
+      }
+    },
+    torrentDownloading (torrent) {
+      if (torrent.Started && !torrent.Finished) {
+        return false
+      }
+    },
+    torrentUploading (torrent) {
+      if (torrent.Started && torrent.Finished) {
+        return 'file_upload'
+      }
+    },
     progressStyle (width) {
         return {
             width: width + '%',
@@ -59,7 +81,6 @@ export default {
 
   },
   mounted() {
-
     window.sock.on("sync-torrent", e => {
       console.log(e);
       this.torrents = e;
@@ -69,4 +90,7 @@ export default {
 </script>
 
 <style>
+/* li {
+  margin-bottom: 1em;
+} */
 </style>

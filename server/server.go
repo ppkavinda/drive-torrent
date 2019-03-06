@@ -78,6 +78,7 @@ func (s *Server) Start() error {
 			s.state.Unlock()
 			time.Sleep(1 * time.Second)
 
+			// when the file is finished download, upload it to GDrive
 			for _, torrent := range s.state.Torrents {
 				if torrent.Finished && !torrent.Uploaded {
 					s.uploadFiles(torrent.InfoHash)

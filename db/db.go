@@ -81,20 +81,21 @@ func GetEmailOfTorrent(infohash string) []string {
 		emails = append(emails, email)
 		ids = append(ids, id)
 	}
-	stmt2, err := db.Prepare("delete from torrents where id = ?")
-	if err != nil {
-		log.Printf("GetEmailOfTorrent:4 delete %+v\n", err)
-		return nil
-	}
-	defer stmt2.Close()
+	// delete record from the sqlite DB
+	// stmt2, err := db.Prepare("delete from torrents where id = ?")
+	// if err != nil {
+	// 	log.Printf("GetEmailOfTorrent:4 delete %+v\n", err)
+	// 	return nil
+	// }
+	// defer stmt2.Close()
 
-	for _, id := range ids {
-		_, err = stmt2.Exec(id)
-		if err != nil {
-			fmt.Printf("GetTorrentOfEmail5 %+v\n", err)
+	// for _, id := range ids {
+	// 	_, err = stmt2.Exec(id)
+	// 	if err != nil {
+	// 		fmt.Printf("GetTorrentOfEmail5 %+v\n", err)
 
-		}
-	}
+	// 	}
+	// }
 
 	// fmt.Printf("FINISHED : %s\n", id)
 
