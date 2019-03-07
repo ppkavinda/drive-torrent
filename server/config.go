@@ -31,7 +31,7 @@ func init() {
 func configureOAuthClient(clientID, clientSecret string) *oauth2.Config {
 	redirectURL := os.Getenv("OAUTH2_CALLBACK")
 	if redirectURL == "" {
-		redirectURL = "http://localhost:3000/oauth2callback"
+		redirectURL = "/oauth2callback"
 	}
 	return &oauth2.Config{
 		ClientID:     clientID,
