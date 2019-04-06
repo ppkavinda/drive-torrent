@@ -53,7 +53,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	// // This protects against CSRF (cross-site request forgery).
 	// // See https://godoc.org/golang.org/x/oauth2#Config.AuthCodeURL for more detail.
 	url := OAuthConfig.AuthCodeURL(sessionID, oauth2.ApprovalForce,
-		oauth2.AccessTypeOffline)
+		oauth2.AccessTypeOffline, oauth2.ApprovalForce)
 	http.Redirect(w, r, url, http.StatusFound)
 	// fmt.Println("redirectURL", redirectURL)
 }
