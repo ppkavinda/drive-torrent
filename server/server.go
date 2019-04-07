@@ -2,6 +2,7 @@ package server
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -13,9 +14,6 @@ import (
 
 	"github.com/gorilla/mux"
 
-	// "golang.org/x/net/websocket"
-
-	// _ "github.com/mattn/go-sqlite3"
 	"github.com/ppkavinda/drive-torrent/db"
 	"github.com/ppkavinda/drive-torrent/engine"
 )
@@ -38,6 +36,11 @@ type Server struct {
 // Start will start the http server
 func (s *Server) Start() error {
 	port := os.Getenv("PORT")
+
+	// get port as a cmd flag (if set)
+	flag.StringVar(&port, "port", "", "specify the port number")
+	flag.Parse()
+
 	if port == "" {
 		port = s.Port
 	}
@@ -64,10 +67,7 @@ func (s *Server) Start() error {
 		// return appErrorf(err, "Unable to Configure %v", err)
 	}
 
-	// for _, hash := range db.GetAllTorrentHashes() {
-	// 	s.engine.Start(hash)
-	// 	fmt.Printf("%+v\n", hash)
-	// }
+	s.engine.StartExistingTorrents()
 
 	//poll torrents and files
 	go func() {
@@ -96,7 +96,6 @@ func (s *Server) Start() error {
 	r := mux.NewRouter()
 	r = getRoutes(s, r)
 
-	// http.Handle("/sync", websocket.Handler(s.SocketHandler))
 	http.HandleFunc("/sync", s.SocketHandler)
 
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), nil))

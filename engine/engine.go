@@ -41,7 +41,7 @@ func (e *Engine) Config(c Config) error {
 		time.Sleep(1 * time.Second)
 	}
 	if c.IncomingPort <= 0 {
-		return fmt.Errorf("Invalid incoming port (%d)\n", c.IncomingPort)
+		return fmt.Errorf("Invalid incoming port (%d)", c.IncomingPort)
 	}
 	torrentConfig := torrent.Config{
 		DHTConfig: dht.ServerConfig{
@@ -91,6 +91,13 @@ func (e *Engine) NewTorrentFromSpec(spec *torrent.TorrentSpec, email string) err
 
 	return e.newTorrent(tt)
 }
+
+// NewTorrentFromHash : add torrent from infohash
+func (e *Engine) NewTorrentFromHash(infoHash metainfo.Hash) error {
+	tt, _ := e.client.AddTorrentInfoHash(infoHash)
+
+	return e.newTorrent(tt)
+}
 func (e *Engine) newTorrent(torrent *torrent.Torrent) error {
 	t := e.saveTorrent(torrent)
 	// fmt.Printf("DONE4 %v\n", e.client.Torrents())
@@ -123,7 +130,7 @@ func (e *Engine) StartTorrent(infoHash string) error {
 
 	if t.Started {
 		// fmt.Println("Already started")
-		return fmt.Errorf("Already started\n")
+		return fmt.Errorf("Already started")
 	}
 
 	t.Started = true
@@ -138,6 +145,20 @@ func (e *Engine) StartTorrent(infoHash string) error {
 		t.t.DownloadAll()
 	}
 
+	return nil
+}
+
+// StartExistingTorrents : start previously added torrents (in case of restart of engine)
+func (e *Engine) StartExistingTorrents() error {
+	for _, hash := range db.GetAllTorrentHashes() {
+		infoHash, _ := str2hi(hash)
+		err := e.NewTorrentFromHash(infoHash)
+		if err != nil {
+			fmt.Printf("re-start existing torrents : %+v\n", err)
+			return err
+		}
+
+	}
 	return nil
 }
 
@@ -164,7 +185,7 @@ func (e *Engine) GetTorrent(infoHash string) (*Torrent, error) {
 	}
 	t, ok := e.ts[hi.HexString()]
 	if !ok {
-		return t, fmt.Errorf("Missing torrent %x\n", hi)
+		return t, fmt.Errorf("Missing torrent %x", hi)
 	}
 
 	return t, nil
@@ -178,10 +199,10 @@ func str2hi(infoHash string) (metainfo.Hash, error) {
 	if err != nil {
 		fmt.Printf("str2hi %v\n", err)
 
-		return hi, fmt.Errorf("Invalid hex string\n")
+		return hi, fmt.Errorf("Invalid hex string")
 	}
 	if e != 20 {
-		return hi, fmt.Errorf("Invalid length\n")
+		return hi, fmt.Errorf("Invalid length")
 	}
 
 	return hi, nil
