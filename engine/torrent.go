@@ -23,9 +23,11 @@ type Torrent struct {
 	t            *torrent.Torrent
 	updatedAt    time.Time
 
-	UserEmails []string
-	Finished   bool
-	Uploaded   bool
+	UserEmails   []string
+	Finished     bool
+	Uploaded     int64
+	UploadRate   string
+	FinishUpload bool
 }
 
 // File inside a torrent
@@ -104,12 +106,12 @@ func (torrent *Torrent) updateLoaded(t *torrent.Torrent) {
 		torrent.Finished = true
 	}
 
-	fmt.Printf("NOT FINISHED\n")
+	// fmt.Printf("NOT FINISHED\n")
 }
 
 // Stop : stop torrent from being download
 func (e *Engine) Stop(infohash string) error {
-	t, err := e.getTorrent(infohash)
+	t, err := e.GetTorrent(infohash)
 	if err != nil {
 		fmt.Printf("Stop Torrent: %+v\n", err)
 		return err
@@ -130,7 +132,7 @@ func (e *Engine) Stop(infohash string) error {
 
 // Delete : remove torrent from engine
 func (e *Engine) Delete(infohash string) error {
-	t, err := e.getTorrent(infohash)
+	t, err := e.GetTorrent(infohash)
 	if err != nil {
 		fmt.Printf("DeleteTorrent: %+v\n", err)
 	}

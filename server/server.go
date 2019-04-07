@@ -80,9 +80,9 @@ func (s *Server) Start() error {
 
 			// when the file is finished download, upload it to GDrive
 			for _, torrent := range s.state.Torrents {
-				if torrent.Finished && !torrent.Uploaded {
+				if torrent.Finished && !torrent.FinishUpload {
 					s.uploadFiles(torrent.InfoHash)
-					torrent.Uploaded = true
+					torrent.FinishUpload = true
 				}
 			}
 		}
@@ -126,7 +126,7 @@ func (s *Server) reconfig(c engine.Config) error {
 // type appError struct {
 // 	Error   error
 // 	Message string
-// 	Code    int
+// Code    int
 // }
 
 // func (fn appHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {

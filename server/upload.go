@@ -20,16 +20,20 @@ func (s *Server) uploadFiles(infohash string) {
 	emails := db.GetEmailOfTorrent(infohash)
 	files := s.engine.GetFiles(infohash)
 	parentName := strings.Split(files[0].Path, "/")
+	torrent, err := s.engine.GetTorrent(infohash)
+	if err != nil {
+		fmt.Printf("Error: cannot get torrent of %s %+v\n", infohash, err)
+	}
 
 	for _, email := range emails {
-		fmt.Printf("uploading to :: %+v\n", email)
+		log.Printf("uploading to :: %+v\n", email)
 		// continue
 
 		client := getClient(OAuthConfig, email)
 
 		srv, err := drive.New(client)
 		if err != nil {
-			log.Fatalf("Unable to retrieve Drive client: %v", err)
+			log.Fatalf("Unable to retrieve Drive client: %v\n", err)
 		}
 
 		// var parentName []string
@@ -44,34 +48,34 @@ func (s *Server) uploadFiles(infohash string) {
 				for _, fldrName := range strings.Split(folders, "/") {
 					parentID = getOrCreateDriveFolder(srv, fldrName, parentID)
 				}
-				_, err = uploadToDrive(srv, "", parentID, file)
+				_, err = uploadToDrive(srv, "", parentID, file, &torrent)
 				if err != nil {
 					fmt.Printf("%+v\n", err)
 				}
 			}
 		} else {
 			parentID := getOrCreateDriveFolder(srv, "drive-torrent", "")
-			_, err = uploadToDrive(srv, "", parentID, files[0])
+			_, err = uploadToDrive(srv, "", parentID, files[0], &torrent)
 			if err != nil {
 				fmt.Printf("%+v\n", err)
 			}
 		}
 	}
-	err := os.RemoveAll(filepath.Join("./downloads", parentName[0]))
+	err = os.RemoveAll(filepath.Join("./downloads", parentName[0]))
 	if err != nil {
-		fmt.Printf("Cannot Delete file %+v", err)
+		fmt.Printf("Cannot Delete file %+v\n", err)
 		return
 	}
 
 	err = s.engine.Delete(infohash)
 	if err != nil {
-		fmt.Printf("Cannot Delete file %+v", err)
+		fmt.Printf("Cannot Delete file %+v\n", err)
 		return
 	}
 }
 
 func uploadToDrive(d *drive.Service, description string,
-	parentID string, file *engine.File) (*drive.File, error) {
+	parentID string, file *engine.File, torrent **engine.Torrent) (*drive.File, error) {
 
 	filePath := filepath.Join("./downloads", strings.TrimSpace(file.Path))
 
@@ -98,7 +102,11 @@ func uploadToDrive(d *drive.Service, description string,
 
 	// progress call back
 	showProgress := func(current, total int64) {
-		log.Printf("Uploaded at %s, %s/%s\r", getRate(current), Comma(current), Comma(total))
+		(*torrent).UploadRate = getRate(current)
+		(*torrent).Uploaded = current
+		// log.Printf("%+v", torrent)
+
+		// log.Printf("Uploaded at %s, %s/%s\r", getRate(current), Comma(current), Comma(total))
 	}
 
 	r, err := d.Files.Create(f).ResumableMedia(context.Background(), input, inputInfo.Size(), mimeType).ProgressUpdater(showProgress).Do()

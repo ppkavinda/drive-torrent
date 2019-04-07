@@ -2,27 +2,39 @@
   <div>
     <h4>Torrents</h4>
     <ul v-if="torrents.length" class="collection">
-      <li style="margin-bottom:1em;" v-for="(torrent, i) in torrents" :key="i" :class="'collection-item row lighten-5 ' + getStatus(torrent)">
-        <div class="progress orange lighten-3">
-          <div class="determinate orange darken-2" :style="progressStyle(torrent.Percent)"></div>
+      <li style="margin-bottom:1em;" v-for="(torrent, i) in torrents" :key="i" class="collection-item">
+        <div class="lighten-5 orange row" v-if="torrentDownloading(torrent)">
+          <div class="progress orange lighten-3">
+            <div class="determinate orange darken-2" :style="progressStyle(torrent.Percent)"></div>
+          </div>
+          <div class="col s6">
+            <span><i class="material-icons">file_download</i> Downloading</span>
+            <br>
+              {{ torrent.Name }} : <strong>{{ torrent.Percent }}%</strong> <br>
+              {{ Number(torrent.DownloadRate / 1024 ).toFixed(2) }} KB/s 
+          </div>
+          <div class="right">
+          <a v-if="!torrent.Started" @click="start(torrent.InfoHash)" class="btn btn-small  waves-effect waves-light green">
+            Start <i class="material-icons right"> play_arrow</i>
+          </a>
+          <a v-if="torrent.Started" @click="stop(torrent.InfoHash)" class="btn waves-effect waves-light btn-small orange">
+            Stop <i class="material-icons right"> stop</i>
+          </a>
+          <a @click="remove(torrent.InfoHash)" class="waves-effect waves-light btn red">
+            <i class="material-icons right">delete</i>Remove
+          </a>
+          </div>
         </div>
-        <div class="col s6">
-          <span v-if="torrentDownloading(torrent)"><i class="material-icons">file_download</i> Downloading</span>
-          <span v-if="torrentUploading(torrent)"><i class="material-icons">file_upload</i> Uploading</span>
-          <br>
-            {{ torrent.Name }} : <strong>{{ torrent.Percent }}%</strong> <br>
-             {{ Number(torrent.DownloadRate / 1024 ).toFixed(2) }} KB/s 
-        </div>
-        <div class="right">
-        <a v-if="!torrent.Started" @click="start(torrent.InfoHash)" class="btn btn-small  waves-effect waves-light green">
-          Start <i class="material-icons right"> play_arrow</i>
-        </a>
-        <a v-if="torrent.Started" @click="stop(torrent.InfoHash)" class="btn waves-effect waves-light btn-small orange">
-          Stop <i class="material-icons right"> stop</i>
-        </a>
-        <a @click="remove(torrent.InfoHash)" class="waves-effect waves-light btn red">
-          <i class="material-icons right">delete</i>Remove
-        </a>
+        <div class="lighten-5 green row" v-if="torrentUploading(torrent)">
+          <div class="progress green lighten-3">
+            <div class="determinate orange darken-2" :style="progressStyle(torrent.Uploaded / torrent.Size)"></div>
+          </div>
+          <div class="col s6">
+            <span><i class="material-icons">file_upload</i> Uploading</span>
+            <br>
+              {{ torrent.Name }} : <strong>{{ torrent.Uploaded / torrent.Size }}%</strong> <br>
+              {{ torrent.UploadRate }}
+          </div>
         </div>
       </li>
     </ul>

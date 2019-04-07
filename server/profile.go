@@ -48,7 +48,7 @@ func stripProfile(p *drive.About) *profile.Profile {
 		ImageURL:    p.User.PhotoLink,
 		Email:       p.User.EmailAddress,
 	}
-	fmt.Printf("%v", profile.User)
+	// fmt.Printf("%v\n", profile.User)
 	return profile.User
 }
 

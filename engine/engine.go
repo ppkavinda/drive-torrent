@@ -3,6 +3,7 @@ package engine
 import (
 	"encoding/hex"
 	"fmt"
+	"log"
 	"strconv"
 	"sync"
 	"time"
@@ -40,7 +41,7 @@ func (e *Engine) Config(c Config) error {
 		time.Sleep(1 * time.Second)
 	}
 	if c.IncomingPort <= 0 {
-		return fmt.Errorf("Invalid incoming port (%d)", c.IncomingPort)
+		return fmt.Errorf("Invalid incoming port (%d)\n", c.IncomingPort)
 	}
 	torrentConfig := torrent.Config{
 		DHTConfig: dht.ServerConfig{
@@ -82,7 +83,7 @@ func (e *Engine) NewMagnet(magnetURI, email string) error {
 func (e *Engine) NewTorrentFromSpec(spec *torrent.TorrentSpec, email string) error {
 	tt, _, err := e.client.AddTorrentSpec(spec)
 	if err != nil {
-		fmt.Printf("NEW SPEC: %+v", err)
+		fmt.Printf("NEW SPEC: %+v\n", err)
 		return err
 	}
 
@@ -92,13 +93,14 @@ func (e *Engine) NewTorrentFromSpec(spec *torrent.TorrentSpec, email string) err
 }
 func (e *Engine) newTorrent(torrent *torrent.Torrent) error {
 	t := e.saveTorrent(torrent)
-	fmt.Printf("DONE4 %v\n", e.client.Torrents())
+	// fmt.Printf("DONE4 %v\n", e.client.Torrents())
 
 	go func() {
 		// wait for engine to collect information
-		st := <-t.t.GotInfo()
+		<-t.t.GotInfo()
 
-		fmt.Printf("DONE4 %v\n", st)
+		// fmt.Printf("DONE4 %v\n", st)
+		log.Printf("Information collected for %s\n", t.InfoHash)
 
 		e.StartTorrent(t.InfoHash)
 	}()
@@ -108,21 +110,20 @@ func (e *Engine) newTorrent(torrent *torrent.Torrent) error {
 
 // StartTorrent : start a relevent torrent according to the infoHash
 func (e *Engine) StartTorrent(infoHash string) error {
-	fmt.Printf("DONE3 %v\n", infoHash)
 
 	t, err := e.getOpenTorrent(infoHash)
 
-	fmt.Println("HASH", infoHash)
+	log.Printf("Torrent started %s\n", infoHash)
 
 	if err != nil {
-		fmt.Printf("DONE3 %v\n", err)
+		fmt.Printf("Error starting torrent %v\n", err)
 
 		return err
 	}
 
 	if t.Started {
-		fmt.Println("Already started")
-		return fmt.Errorf("Already started")
+		// fmt.Println("Already started")
+		return fmt.Errorf("Already started\n")
 	}
 
 	t.Started = true
@@ -143,7 +144,7 @@ func (e *Engine) StartTorrent(infoHash string) error {
 // getOpenTorrent : returns the relevant torrent according to the infoHash
 // NO DIFFERENCE WITH getTorrent
 func (e *Engine) getOpenTorrent(infoHash string) (*Torrent, error) {
-	t, err := e.getTorrent(infoHash)
+	t, err := e.GetTorrent(infoHash)
 	if err != nil {
 		fmt.Printf("getOpenTorrent %v\n", err)
 
@@ -153,8 +154,8 @@ func (e *Engine) getOpenTorrent(infoHash string) (*Torrent, error) {
 	return t, nil
 }
 
-// getTorrent : returns the relevant torrent according to the infoHash
-func (e *Engine) getTorrent(infoHash string) (*Torrent, error) {
+// GetTorrent : returns the relevant torrent according to the infoHash
+func (e *Engine) GetTorrent(infoHash string) (*Torrent, error) {
 	hi, err := str2hi(infoHash)
 	if err != nil {
 		fmt.Printf("getTorrent %v\n", err)
@@ -163,7 +164,7 @@ func (e *Engine) getTorrent(infoHash string) (*Torrent, error) {
 	}
 	t, ok := e.ts[hi.HexString()]
 	if !ok {
-		return t, fmt.Errorf("Missing torrent %x", hi)
+		return t, fmt.Errorf("Missing torrent %x\n", hi)
 	}
 
 	return t, nil
@@ -177,10 +178,10 @@ func str2hi(infoHash string) (metainfo.Hash, error) {
 	if err != nil {
 		fmt.Printf("str2hi %v\n", err)
 
-		return hi, fmt.Errorf("Invalid hex string")
+		return hi, fmt.Errorf("Invalid hex string\n")
 	}
 	if e != 20 {
-		return hi, fmt.Errorf("Invalid length")
+		return hi, fmt.Errorf("Invalid length\n")
 	}
 
 	return hi, nil

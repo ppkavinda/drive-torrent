@@ -25,7 +25,7 @@ export default {
     window.sock.on("sync-login", res => {
       // Vue.set(window.User, ID, res.ID);
       window.User.ID = res.ID
-      console.log(res)
+      // console.log(res)
     });
   }
 };

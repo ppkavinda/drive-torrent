@@ -2443,8 +2443,7 @@ __webpack_require__.r(__webpack_exports__);
     window.User = this.user;
     window.sock.on("sync-login", function (res) {
       // Vue.set(window.User, ID, res.ID);
-      window.User.ID = res.ID;
-      console.log(res);
+      window.User.ID = res.ID; // console.log(res)
     });
   }
 });
@@ -2652,6 +2651,18 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -2816,7 +2827,7 @@ exports = module.exports = __webpack_require__(/*! ../../node_modules/css-loader
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n/* li {\n  margin-bottom: 1em;\n} */\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n/* li {\n  margin-bottom: 1em;\n} */\n", ""]);
 
 // exports
 
@@ -4636,110 +4647,133 @@ var render = function() {
               "li",
               {
                 key: i,
-                class:
-                  "collection-item row lighten-5 " + _vm.getStatus(torrent),
+                staticClass: "collection-item",
                 staticStyle: { "margin-bottom": "1em" }
               },
               [
-                _c("div", { staticClass: "progress orange lighten-3" }, [
-                  _c("div", {
-                    staticClass: "determinate orange darken-2",
-                    style: _vm.progressStyle(torrent.Percent)
-                  })
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "col s6" }, [
-                  _vm.torrentDownloading(torrent)
-                    ? _c("span", [
-                        _c("i", { staticClass: "material-icons" }, [
-                          _vm._v("file_download")
-                        ]),
-                        _vm._v(" Downloading")
-                      ])
-                    : _vm._e(),
-                  _vm._v(" "),
-                  _vm.torrentUploading(torrent)
-                    ? _c("span", [
-                        _c("i", { staticClass: "material-icons" }, [
-                          _vm._v("file_upload")
-                        ]),
-                        _vm._v(" Uploading")
-                      ])
-                    : _vm._e(),
-                  _vm._v(" "),
-                  _c("br"),
-                  _vm._v("\n          " + _vm._s(torrent.Name) + " : "),
-                  _c("strong", [_vm._v(_vm._s(torrent.Percent) + "%")]),
-                  _vm._v(" "),
-                  _c("br"),
-                  _vm._v(
-                    "\n           " +
-                      _vm._s(Number(torrent.DownloadRate / 1024).toFixed(2)) +
-                      " KB/s \n      "
-                  )
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "right" }, [
-                  !torrent.Started
-                    ? _c(
-                        "a",
-                        {
-                          staticClass:
-                            "btn btn-small  waves-effect waves-light green",
-                          on: {
-                            click: function($event) {
-                              _vm.start(torrent.InfoHash)
-                            }
-                          }
-                        },
-                        [
-                          _vm._v("\n        Start "),
-                          _c("i", { staticClass: "material-icons right" }, [
-                            _vm._v(" play_arrow")
-                          ])
-                        ]
-                      )
-                    : _vm._e(),
-                  _vm._v(" "),
-                  torrent.Started
-                    ? _c(
-                        "a",
-                        {
-                          staticClass:
-                            "btn waves-effect waves-light btn-small orange",
-                          on: {
-                            click: function($event) {
-                              _vm.stop(torrent.InfoHash)
-                            }
-                          }
-                        },
-                        [
-                          _vm._v("\n        Stop "),
-                          _c("i", { staticClass: "material-icons right" }, [
-                            _vm._v(" stop")
-                          ])
-                        ]
-                      )
-                    : _vm._e(),
-                  _vm._v(" "),
-                  _c(
-                    "a",
-                    {
-                      staticClass: "waves-effect waves-light btn red",
-                      on: {
-                        click: function($event) {
-                          _vm.remove(torrent.InfoHash)
-                        }
-                      }
-                    },
-                    [
-                      _c("i", { staticClass: "material-icons right" }, [
-                        _vm._v("delete")
+                _vm.torrentDownloading(torrent)
+                  ? _c("div", { staticClass: "lighten-5 orange row" }, [
+                      _c("div", { staticClass: "progress orange lighten-3" }, [
+                        _c("div", {
+                          staticClass: "determinate orange darken-2",
+                          style: _vm.progressStyle(torrent.Percent)
+                        })
                       ]),
-                      _vm._v("Remove\n      ")
-                    ]
-                  )
-                ])
+                      _vm._v(" "),
+                      _c("div", { staticClass: "col s6" }, [
+                        _vm._m(0, true),
+                        _vm._v(" "),
+                        _c("br"),
+                        _vm._v("\n            " + _vm._s(torrent.Name) + " : "),
+                        _c("strong", [_vm._v(_vm._s(torrent.Percent) + "%")]),
+                        _vm._v(" "),
+                        _c("br"),
+                        _vm._v(
+                          "\n            " +
+                            _vm._s(
+                              Number(torrent.DownloadRate / 1024).toFixed(2)
+                            ) +
+                            " KB/s \n        "
+                        )
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "right" }, [
+                        !torrent.Started
+                          ? _c(
+                              "a",
+                              {
+                                staticClass:
+                                  "btn btn-small  waves-effect waves-light green",
+                                on: {
+                                  click: function($event) {
+                                    _vm.start(torrent.InfoHash)
+                                  }
+                                }
+                              },
+                              [
+                                _vm._v("\n          Start "),
+                                _c(
+                                  "i",
+                                  { staticClass: "material-icons right" },
+                                  [_vm._v(" play_arrow")]
+                                )
+                              ]
+                            )
+                          : _vm._e(),
+                        _vm._v(" "),
+                        torrent.Started
+                          ? _c(
+                              "a",
+                              {
+                                staticClass:
+                                  "btn waves-effect waves-light btn-small orange",
+                                on: {
+                                  click: function($event) {
+                                    _vm.stop(torrent.InfoHash)
+                                  }
+                                }
+                              },
+                              [
+                                _vm._v("\n          Stop "),
+                                _c(
+                                  "i",
+                                  { staticClass: "material-icons right" },
+                                  [_vm._v(" stop")]
+                                )
+                              ]
+                            )
+                          : _vm._e(),
+                        _vm._v(" "),
+                        _c(
+                          "a",
+                          {
+                            staticClass: "waves-effect waves-light btn red",
+                            on: {
+                              click: function($event) {
+                                _vm.remove(torrent.InfoHash)
+                              }
+                            }
+                          },
+                          [
+                            _c("i", { staticClass: "material-icons right" }, [
+                              _vm._v("delete")
+                            ]),
+                            _vm._v("Remove\n        ")
+                          ]
+                        )
+                      ])
+                    ])
+                  : _vm._e(),
+                _vm._v(" "),
+                _vm.torrentUploading(torrent)
+                  ? _c("div", { staticClass: "lighten-5 green row" }, [
+                      _c("div", { staticClass: "progress green lighten-3" }, [
+                        _c("div", {
+                          staticClass: "determinate orange darken-2",
+                          style: _vm.progressStyle(
+                            torrent.Uploaded / torrent.Size
+                          )
+                        })
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "col s6" }, [
+                        _vm._m(1, true),
+                        _vm._v(" "),
+                        _c("br"),
+                        _vm._v("\n            " + _vm._s(torrent.Name) + " : "),
+                        _c("strong", [
+                          _vm._v(_vm._s(torrent.Uploaded / torrent.Size) + "%")
+                        ]),
+                        _vm._v(" "),
+                        _c("br"),
+                        _vm._v(
+                          "\n            " +
+                            _vm._s(torrent.UploadRate) +
+                            "\n        "
+                        )
+                      ])
+                    ])
+                  : _vm._e()
               ]
             )
           }),
@@ -4748,7 +4782,26 @@ var render = function() {
       : _c("span", [_vm._v("No Torrents yet!")])
   ])
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("span", [
+      _c("i", { staticClass: "material-icons" }, [_vm._v("file_download")]),
+      _vm._v(" Downloading")
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("span", [
+      _c("i", { staticClass: "material-icons" }, [_vm._v("file_upload")]),
+      _vm._v(" Uploading")
+    ])
+  }
+]
 render._withStripped = true
 
 
