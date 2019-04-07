@@ -116,7 +116,6 @@ func uploadToDrive(d *drive.Service, description string,
 		previousTotal = total
 		(*torrent).UploadedCurrent = current
 		(*torrent).UploadedTotal = current + previousFile
-		// log.Printf("%+v", torrent)
 
 		// log.Printf("Uploaded at %s, %s/%s\r", getRate(current), Comma(current), Comma(total))
 	}
@@ -131,7 +130,6 @@ func uploadToDrive(d *drive.Service, description string,
 	bytes := r.Size
 	// Print information about uploaded file
 	log.Printf("Uploaded '%s' at %s, total %s\n", r.Name, getRate(bytes), FileSizeFormat(bytes, false))
-	// fmt.Printf("File : %+v\n", r)
 	return r, nil
 }
 

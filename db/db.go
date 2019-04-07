@@ -81,25 +81,6 @@ func GetEmailOfTorrent(infohash string) []string {
 		emails = append(emails, email)
 		ids = append(ids, id)
 	}
-	// delete record from the sqlite DB
-	// TODO : instead of delete set a flag to indicate uploaded, that way we can
-	// keep the histry
-	// stmt2, err := db.Prepare("delete from torrents where id = ?")
-	// if err != nil {
-	// 	log.Printf("GetEmailOfTorrent:4 delete %+v\n", err)
-	// 	return nil
-	// }
-	// defer stmt2.Close()
-
-	// for _, id := range ids {
-	// 	_, err = stmt2.Exec(id)
-	// 	if err != nil {
-	// 		fmt.Printf("GetTorrentOfEmail5 %+v\n", err)
-
-	// 	}
-	// }
-
-	// fmt.Printf("FINISHED : %s\n", id)
 
 	return emails
 }
@@ -134,6 +115,8 @@ func SaveInDb(torrent *torrent.Torrent, email string) {
 }
 
 // DeleteTorrent : delete torrent from sqlite database
+// TODO : instead of delete set a flag to indicate uploaded, that way we can
+// keep the histry
 func DeleteTorrent(infohash, email string) error {
 	db, err := sql.Open("sqlite3", "./info.db")
 	if err != nil {
