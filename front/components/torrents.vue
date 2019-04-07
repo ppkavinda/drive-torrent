@@ -2,8 +2,8 @@
   <div>
     <h4>Torrents</h4>
     <ul v-if="torrents.length" class="collection">
-      <li style="margin-bottom:1em;" v-for="(torrent, i) in torrents" :key="i" class="collection-item">
-        <div class="lighten-5 orange row" v-if="torrentDownloading(torrent)">
+      <li style="margin-bottom:1em;" v-for="(torrent, i) in torrents" :key="i" class="">
+        <div class="collection-item lighten-5 orange row" v-if="torrentDownloading(torrent)">
           <div class="progress orange lighten-3">
             <div class="determinate orange darken-2" :style="progressStyle(torrent.Percent)"></div>
           </div>
@@ -25,7 +25,7 @@
           </a>
           </div>
         </div>
-        <div class="lighten-5 green row" v-if="torrentUploading(torrent)">
+        <div class="collection-item lighten-5 green row" v-if="torrentUploading(torrent)">
           <div class="progress green lighten-3">
             <div class="determinate green darken-2" :style="progressStyle(getUploadPercentage(torrent))"></div>
           </div>
@@ -67,7 +67,7 @@ export default {
         .then(e => console.log(e))
     },
     getUploadPercentage(torrent) {
-      let percentage = (torrent.UploadedCurrent / torrent.UploadedTotal) * 100
+      let percentage = (torrent.UploadedTotal / torrent.Size) * 100
       return percentage ? (percentage).toFixed(2) : 0
     },
     getStatus(torrent) {
