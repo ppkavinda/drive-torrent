@@ -104,11 +104,18 @@ func uploadToDrive(d *drive.Service, description string,
 	f := &drive.File{Name: fileName, Parents: []string{parentID}, Description: description, MimeType: mimeType}
 	getRate := MeasureTransferRate()
 
+	previousFile := int64(0)
+	previousTotal := int64(0)
 	// progress call back
 	showProgress := func(current, total int64) {
 		(*torrent).UploadRate = getRate(current)
+		if previousTotal != total {
+			previousFile += (*torrent).UploadedCurrent
+		}
+
+		previousTotal = total
 		(*torrent).UploadedCurrent = current
-		(*torrent).UploadedTotal += current
+		(*torrent).UploadedTotal = current + previousFile
 		// log.Printf("%+v", torrent)
 
 		// log.Printf("Uploaded at %s, %s/%s\r", getRate(current), Comma(current), Comma(total))
