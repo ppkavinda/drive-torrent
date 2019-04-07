@@ -23,11 +23,12 @@ type Torrent struct {
 	t            *torrent.Torrent
 	updatedAt    time.Time
 
-	UserEmails   []string
-	Finished     bool
-	Uploaded     int64
-	UploadRate   string
-	FinishUpload bool
+	UserEmails      []string
+	Finished        bool
+	UploadedCurrent int64
+	UploadedTotal   int64
+	UploadRate      string
+	FinishUpload    bool
 }
 
 // File inside a torrent

@@ -2695,6 +2695,10 @@ __webpack_require__.r(__webpack_exports__);
         return console.log(e);
       });
     },
+    getUploadRate: function getUploadRate(torrent) {
+      var rate = torrent.UploadedCurrent / torrent.UploadedTotal;
+      return rate ? rate : 0;
+    },
     getStatus: function getStatus(torrent) {
       if (torrent.Started && !torrent.Finished) {
         return 'orange';
@@ -2704,7 +2708,7 @@ __webpack_require__.r(__webpack_exports__);
     },
     torrentDownloading: function torrentDownloading(torrent) {
       if (torrent.Started && !torrent.Finished) {
-        return false;
+        return true;
       }
     },
     torrentUploading: function torrentUploading(torrent) {
@@ -2827,7 +2831,7 @@ exports = module.exports = __webpack_require__(/*! ../../node_modules/css-loader
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n/* li {\n  margin-bottom: 1em;\n} */\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n/* li {\n  margin-bottom: 1em;\n} */\n", ""]);
 
 // exports
 
@@ -4749,10 +4753,8 @@ var render = function() {
                   ? _c("div", { staticClass: "lighten-5 green row" }, [
                       _c("div", { staticClass: "progress green lighten-3" }, [
                         _c("div", {
-                          staticClass: "determinate orange darken-2",
-                          style: _vm.progressStyle(
-                            torrent.Uploaded / torrent.Size
-                          )
+                          staticClass: "determinate green darken-2",
+                          style: _vm.progressStyle(_vm.getUploadRate(torrent))
                         })
                       ]),
                       _vm._v(" "),
@@ -4762,7 +4764,7 @@ var render = function() {
                         _c("br"),
                         _vm._v("\n            " + _vm._s(torrent.Name) + " : "),
                         _c("strong", [
-                          _vm._v(_vm._s(torrent.Uploaded / torrent.Size) + "%")
+                          _vm._v(_vm._s(_vm.getUploadRate(torrent)) + "%")
                         ]),
                         _vm._v(" "),
                         _c("br"),

@@ -107,7 +107,8 @@ func uploadToDrive(d *drive.Service, description string,
 	// progress call back
 	showProgress := func(current, total int64) {
 		(*torrent).UploadRate = getRate(current)
-		(*torrent).Uploaded = current
+		(*torrent).UploadedCurrent = current
+		(*torrent).UploadedTotal = total
 		// log.Printf("%+v", torrent)
 
 		// log.Printf("Uploaded at %s, %s/%s\r", getRate(current), Comma(current), Comma(total))
