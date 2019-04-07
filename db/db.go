@@ -84,20 +84,20 @@ func GetEmailOfTorrent(infohash string) []string {
 	// delete record from the sqlite DB
 	// TODO : instead of delete set a flag to indicate uploaded, that way we can
 	// keep the histry
-	stmt2, err := db.Prepare("delete from torrents where id = ?")
-	if err != nil {
-		log.Printf("GetEmailOfTorrent:4 delete %+v\n", err)
-		return nil
-	}
-	defer stmt2.Close()
+	// stmt2, err := db.Prepare("delete from torrents where id = ?")
+	// if err != nil {
+	// 	log.Printf("GetEmailOfTorrent:4 delete %+v\n", err)
+	// 	return nil
+	// }
+	// defer stmt2.Close()
 
-	for _, id := range ids {
-		_, err = stmt2.Exec(id)
-		if err != nil {
-			fmt.Printf("GetTorrentOfEmail5 %+v\n", err)
+	// for _, id := range ids {
+	// 	_, err = stmt2.Exec(id)
+	// 	if err != nil {
+	// 		fmt.Printf("GetTorrentOfEmail5 %+v\n", err)
 
-		}
-	}
+	// 	}
+	// }
 
 	// fmt.Printf("FINISHED : %s\n", id)
 
@@ -140,7 +140,7 @@ func DeleteTorrent(infohash, email string) error {
 		fmt.Printf("SQL: %v", err)
 	}
 	defer db.Close()
-	stmt2, err := db.Prepare("delete from torrents where hash = ?, and email = ?")
+	stmt2, err := db.Prepare("delete from torrents where hash = ? and email = ?")
 	if err != nil {
 		log.Printf("GetEmailOfTorrent:4 delete %+v\n", err)
 		return nil
@@ -201,7 +201,8 @@ func SetupDB() {
 			id integer primary key,
 			name text,
 			hash text,
-			email text
+			email text,
+			uploaded integer
 			);`
 
 	_, err = db.Exec(sqlStmt)

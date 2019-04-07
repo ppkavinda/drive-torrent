@@ -60,6 +60,10 @@ func (s *Server) uploadFiles(infohash string) {
 				fmt.Printf("%+v\n", err)
 			}
 		}
+		err = db.DeleteTorrent(infohash, email)
+		if err != nil {
+			fmt.Printf("%+v\n", err)
+		}
 	}
 	err = os.RemoveAll(filepath.Join("./downloads", parentName[0]))
 	if err != nil {
