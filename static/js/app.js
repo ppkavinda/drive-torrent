@@ -2695,9 +2695,9 @@ __webpack_require__.r(__webpack_exports__);
         return console.log(e);
       });
     },
-    getUploadRate: function getUploadRate(torrent) {
-      var rate = torrent.UploadedCurrent / torrent.UploadedTotal;
-      return rate ? rate : 0;
+    getUploadPercentage: function getUploadPercentage(torrent) {
+      var percentage = torrent.UploadedCurrent / torrent.UploadedTotal * 100;
+      return percentage ? percentage.toFixed(2) : 0;
     },
     getStatus: function getStatus(torrent) {
       if (torrent.Started && !torrent.Finished) {
@@ -4754,7 +4754,9 @@ var render = function() {
                       _c("div", { staticClass: "progress green lighten-3" }, [
                         _c("div", {
                           staticClass: "determinate green darken-2",
-                          style: _vm.progressStyle(_vm.getUploadRate(torrent))
+                          style: _vm.progressStyle(
+                            _vm.getUploadPercentage(torrent)
+                          )
                         })
                       ]),
                       _vm._v(" "),
@@ -4764,7 +4766,7 @@ var render = function() {
                         _c("br"),
                         _vm._v("\n            " + _vm._s(torrent.Name) + " : "),
                         _c("strong", [
-                          _vm._v(_vm._s(_vm.getUploadRate(torrent)) + "%")
+                          _vm._v(_vm._s(_vm.getUploadPercentage(torrent)) + "%")
                         ]),
                         _vm._v(" "),
                         _c("br"),

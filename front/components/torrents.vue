@@ -27,12 +27,12 @@
         </div>
         <div class="lighten-5 green row" v-if="torrentUploading(torrent)">
           <div class="progress green lighten-3">
-            <div class="determinate green darken-2" :style="progressStyle(getUploadRate(torrent))"></div>
+            <div class="determinate green darken-2" :style="progressStyle(getUploadPercentage(torrent))"></div>
           </div>
           <div class="col s6">
             <span><i class="material-icons">file_upload</i> Uploading</span>
             <br>
-              {{ torrent.Name }} : <strong>{{ getUploadRate(torrent) }}%</strong> <br>
+              {{ torrent.Name }} : <strong>{{ getUploadPercentage(torrent) }}%</strong> <br>
               {{ torrent.UploadRate }}
           </div>
         </div>
@@ -66,9 +66,9 @@ export default {
         axios.post("/torrent/remove", {hash})
         .then(e => console.log(e))
     },
-    getUploadRate(torrent) {
-      let rate = torrent.UploadedCurrent / torrent.UploadedTotal
-      return rate ? rate : 0
+    getUploadPercentage(torrent) {
+      let percentage = (torrent.UploadedCurrent / torrent.UploadedTotal) * 100
+      return percentage ? (percentage).toFixed(2) : 0
     },
     getStatus(torrent) {
       if (torrent.Started && !torrent.Finished) {
