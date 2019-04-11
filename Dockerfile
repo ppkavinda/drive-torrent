@@ -1,4 +1,4 @@
-FROM golang:1.11
+FROM golang:1.10.4
 LABEL maintainer="Prasad Kavinda <pp.kavinda@gmail.com>"
 WORKDIR $GOPATH/src/github.com/ppkavinda/drive-torrent
 COPY . .
