@@ -682,6 +682,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vue_router__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vue-router */ "./node_modules/vue-router/dist/vue-router.esm.js");
 /* harmony import */ var _views_home_vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./views/home.vue */ "./front/views/home.vue");
 /* harmony import */ var _views_status_vue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./views/status.vue */ "./front/views/status.vue");
+/* harmony import */ var _views_movie_vue__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./views/movie.vue */ "./front/views/movie.vue");
+
 
 
 
@@ -696,8 +698,12 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_router__WEBPACK_IMPORTED_MODU
     component: _views_home_vue__WEBPACK_IMPORTED_MODULE_2__["default"]
   }, {
     path: '/status',
-    hame: 'status',
+    name: 'status',
     component: _views_status_vue__WEBPACK_IMPORTED_MODULE_3__["default"]
+  }, {
+    path: '/movie/:id',
+    name: 'movie',
+    component: _views_movie_vue__WEBPACK_IMPORTED_MODULE_4__["default"]
   }]
 }));
 
@@ -767,6 +773,75 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_home_vue_vue_type_template_id_16c9a414___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_home_vue_vue_type_template_id_16c9a414___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
+/***/ "./front/views/movie.vue":
+/*!*******************************!*\
+  !*** ./front/views/movie.vue ***!
+  \*******************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _movie_vue_vue_type_template_id_e4da4d6a___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./movie.vue?vue&type=template&id=e4da4d6a& */ "./front/views/movie.vue?vue&type=template&id=e4da4d6a&");
+/* harmony import */ var _movie_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./movie.vue?vue&type=script&lang=js& */ "./front/views/movie.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+  _movie_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _movie_vue_vue_type_template_id_e4da4d6a___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _movie_vue_vue_type_template_id_e4da4d6a___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "front/views/movie.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./front/views/movie.vue?vue&type=script&lang=js&":
+/*!********************************************************!*\
+  !*** ./front/views/movie.vue?vue&type=script&lang=js& ***!
+  \********************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_movie_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../node_modules/babel-loader/lib??ref--4-0!../../node_modules/vue-loader/lib??vue-loader-options!./movie.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./front/views/movie.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_movie_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./front/views/movie.vue?vue&type=template&id=e4da4d6a&":
+/*!**************************************************************!*\
+  !*** ./front/views/movie.vue?vue&type=template&id=e4da4d6a& ***!
+  \**************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_movie_vue_vue_type_template_id_e4da4d6a___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../node_modules/vue-loader/lib??vue-loader-options!./movie.vue?vue&type=template&id=e4da4d6a& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./front/views/movie.vue?vue&type=template&id=e4da4d6a&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_movie_vue_vue_type_template_id_e4da4d6a___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_movie_vue_vue_type_template_id_e4da4d6a___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 
@@ -26729,7 +26804,7 @@ __webpack_require__.r(__webpack_exports__);
       ref: _config_firebase__WEBPACK_IMPORTED_MODULE_0__["db"].collection('films')
     };
   },
-  created: function created() {
+  mounted: function mounted() {
     var _this = this;
 
     _config_firebase__WEBPACK_IMPORTED_MODULE_0__["db"].collection('films').orderBy('date_uploaded', 'desc').limit(9).get().then(function (querySnapshot) {
@@ -27064,6 +27139,128 @@ __webpack_require__.r(__webpack_exports__);
     return {
       user: window.User
     };
+  }
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./front/views/movie.vue?vue&type=script&lang=js&":
+/*!****************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./front/views/movie.vue?vue&type=script&lang=js& ***!
+  \****************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _router__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../router */ "./front/router.js");
+/* harmony import */ var _config_firebase__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../config/firebase */ "./front/config/firebase.js");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  name: 'movie',
+  data: function data() {
+    return {
+      id: 0,
+      movie: {}
+    };
+  },
+  mounted: function mounted() {
+    var _this = this;
+
+    this.id = this.$route.params.id;
+    _config_firebase__WEBPACK_IMPORTED_MODULE_1__["db"].collection('films').doc("".concat(this.id)).get().then(function (querySnapshot) {
+      _this.movie = querySnapshot.data();
+    });
   }
 });
 
@@ -29025,7 +29222,7 @@ var render = function() {
     "div",
     { staticClass: "row" },
     _vm._l(_vm.films, function(film, index) {
-      return _c("div", { key: index, staticClass: "col s4" }, [
+      return _c("div", { key: index, staticClass: "col s3" }, [
         _c("div", { staticClass: "card sticky-action" }, [
           _c(
             "div",
@@ -29052,7 +29249,15 @@ var render = function() {
             _vm._v(" "),
             _c("p", [_vm._v(_vm._s(film.year))]),
             _vm._v(" "),
-            _vm._m(0, true)
+            _c(
+              "p",
+              [
+                _c("router-link", { attrs: { to: "/movie/" + film.id } }, [
+                  _vm._v(" Download")
+                ])
+              ],
+              1
+            )
           ]),
           _vm._v(" "),
           _c("div", { staticClass: "card-reveal" }, [
@@ -29092,14 +29297,7 @@ var render = function() {
     0
   )
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("p", [_c("a", { attrs: { href: "#" } }, [_vm._v("Download")])])
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 
 
@@ -29476,6 +29674,241 @@ var render = function() {
   ])
 }
 var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./front/views/movie.vue?vue&type=template&id=e4da4d6a&":
+/*!********************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./front/views/movie.vue?vue&type=template&id=e4da4d6a& ***!
+  \********************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "container" }, [
+    _c("div", { staticClass: "row" }, [
+      _c("div", { staticClass: "col s4" }, [
+        _c(
+          "div",
+          { staticClass: "card-image waves-effect waves-block waves-light" },
+          [
+            _c("img", {
+              staticClass: "activator",
+              attrs: { src: _vm.movie.medium_cover_image }
+            })
+          ]
+        )
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "col s8" }, [
+        _c("div", { staticClass: "card" }, [
+          _c("div", { staticClass: "card-title" }, [
+            _vm._v(_vm._s(_vm.movie.title))
+          ]),
+          _vm._v(" "),
+          _c(
+            "div",
+            { staticClass: "card-content" },
+            [
+              _c("B", [
+                _c("p", [_vm._v(_vm._s(_vm.movie.year))]),
+                _c("br"),
+                _vm._v(" "),
+                _c(
+                  "div",
+                  { staticClass: "row" },
+                  _vm._l(_vm.movie.genres, function(tag, index) {
+                    return _c("div", { key: index, staticClass: "col s2" }, [
+                      _c("span", { staticClass: "new badge" }, [
+                        _vm._v(_vm._s(tag))
+                      ])
+                    ])
+                  }),
+                  0
+                ),
+                _vm._v(" "),
+                _c("div", { staticClass: "row" }, [
+                  _c("div", { staticClass: "col s2" }, [
+                    _c("img", {
+                      attrs: {
+                        src:
+                          "https://yts.am/assets/images/website/logo-imdb.svg"
+                      }
+                    })
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "col s2" }, [
+                    _c("p", [_vm._v(_vm._s(_vm.movie.rating))])
+                  ])
+                ]),
+                _vm._v(" "),
+                _c("br"),
+                _vm._v(" "),
+                _c("p", [
+                  _vm._v("synopsis: " + _vm._s(_vm.movie.synopsis) + " ")
+                ]),
+                _vm._v(" "),
+                _c("br")
+              ])
+            ],
+            1
+          )
+        ])
+      ])
+    ]),
+    _vm._v(" "),
+    _c("div", { staticClass: "row" }, [
+      _c("div", { staticClass: "col s12" }, [
+        _c("div", { staticClass: "card" }, [
+          _c("iframe", {
+            attrs: {
+              type: "text/html",
+              src:
+                "https://youtube.com/embed/" +
+                _vm.movie.yt_trailer_code +
+                "?autoplay=0",
+              frameborder: "0",
+              width: "100%",
+              height: "360"
+            }
+          })
+        ])
+      ])
+    ]),
+    _vm._v(" "),
+    _c(
+      "div",
+      { staticClass: "card" },
+      _vm._l(_vm.movie.torrents, function(torrent, index) {
+        return _c("div", { key: index, staticClass: "row" }, [
+          _c("div", { staticClass: "col s4" }, [
+            _vm._v(
+              "\n                Quality:" +
+                _vm._s(torrent.type) +
+                " " +
+                _vm._s(torrent.quality) +
+                "\n            "
+            )
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "col s2" }, [
+            _vm._v(
+              "\n                Size: " +
+                _vm._s(torrent.size) +
+                "\n            "
+            )
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "col s2" }, [
+            _c(
+              "a",
+              {
+                staticClass: "waves-effect waves-light btn-small",
+                attrs: { href: torrent.url }
+              },
+              [_vm._v("Torrent")]
+            )
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "col s2" }, [
+            _c(
+              "a",
+              {
+                staticClass: "waves-effect waves-light btn-small",
+                attrs: {
+                  href:
+                    "magnet:?xt=urn:btih:" +
+                    torrent.hash +
+                    "&dn=Url+Encoded+Movie+Name&tr=udp://glotorrents.pw:6969/announce&tr=udp://tracker.opentrackr.org:1337/announce&tr=udp://torrent.gresille.org:80/announce&tr=udp://tracker.openbittorrent.com:80&tr=udp://tracker.coppersurfer.tk:6969&tr=udp://tracker.leechers-paradise.org:6969&tr=udp://p4p.arenabg.ch:1337&tr=udp://tracker.internetwarriors.net:1337"
+                }
+              },
+              [_vm._v("Magnent")]
+            )
+          ]),
+          _vm._v(" "),
+          _vm._m(0, true)
+        ])
+      }),
+      0
+    ),
+    _vm._v(" "),
+    _vm._m(1)
+  ])
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "col s2" }, [
+      _c("a", { staticClass: "waves-effect waves-light btn-small" }, [
+        _vm._v("Direct")
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "card" }, [
+      _c("table", { staticClass: "striped" }, [
+        _c("tr", [
+          _c("th", [_vm._v("Link")]),
+          _vm._v(" "),
+          _c("th", [_vm._v("Quality")]),
+          _vm._v(" "),
+          _c("th", [_vm._v("Up votes")]),
+          _vm._v(" "),
+          _c("th", [_vm._v("Down votes")]),
+          _vm._v(" "),
+          _c("th", [_vm._v("Alive")])
+        ]),
+        _vm._v(" "),
+        _c("tr", [
+          _c("td", [
+            _c("a", { attrs: { href: "https://google.com" } }, [
+              _vm._v("Sample Google Drive1")
+            ])
+          ]),
+          _vm._v(" "),
+          _c("td", [_vm._v("720p")]),
+          _vm._v(" "),
+          _c("td", [_vm._v("105")]),
+          _vm._v(" "),
+          _c("td", [_vm._v("20")]),
+          _vm._v(" "),
+          _c("td", [_vm._v("Alive")])
+        ]),
+        _vm._v(" "),
+        _c("tr", [
+          _c("td", [
+            _c("a", { attrs: { href: "https://google.com" } }, [
+              _vm._v("Sample Google Drive2")
+            ])
+          ]),
+          _vm._v(" "),
+          _c("td", [_vm._v("1080p")]),
+          _vm._v(" "),
+          _c("td", [_vm._v("101")]),
+          _vm._v(" "),
+          _c("td", [_vm._v("200")]),
+          _vm._v(" "),
+          _c("td", [_vm._v("Dead")])
+        ])
+      ])
+    ])
+  }
+]
 render._withStripped = true
 
 

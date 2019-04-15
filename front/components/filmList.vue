@@ -1,6 +1,6 @@
 <template>
     <div class="row">
-        <div v-for="(film, index) in films" :key="index" class="col s4">
+        <div v-for="(film, index) in films" :key="index" class="col s3">
           <div class="card sticky-action">
             <div class="card-image waves-effect waves-block waves-light">
               <img class="activator" :src="film.medium_cover_image">
@@ -8,7 +8,7 @@
             <div class="card-content">
               <span class="card-title activator grey-text text-darken-4">{{film.title}}<i class="material-icons right">more_vert</i></span>
               <p>{{film.year}}</p>
-              <p><a href="#">Download</a></p>
+              <p><router-link :to="'/movie/'+film.id"> Download</router-link></p>
             </div>
             <div class="card-reveal">
               <span class="card-title grey-text text-darken-4">{{film.title}}<i class="material-icons right">close</i></span>
@@ -34,7 +34,7 @@ export default {
         ref: db.collection('films')
       }
     },
-    created(){
+    mounted(){
       db.collection('films').orderBy('date_uploaded','desc').limit(9).get().then((querySnapshot)=> {
         querySnapshot.forEach((doc) => {
           this.films.push(doc.data());
