@@ -2,3 +2,4 @@ downloads
 tokens/*
 node_modules
 info.db
+front/config/firebase.js
