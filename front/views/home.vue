@@ -5,12 +5,7 @@
         <input-torrent></input-torrent>
         <torrents></torrents>
       </div>
-
-      <div v-else v-cloak class="valign-wrapper">
-        <a href="/login" class="center-align waves-effect orange darken-1 waves-light btn-large">
-          <i class="material-icons right">lock</i>Login with Google Drive
-        </a>
-      </div>
+      <film-List></film-List>
     </div>
   </div>
 </template>
@@ -18,9 +13,10 @@
 <script>
 import InputTorrent from '../components/inputTorrent'
 import Torrents from '../components/torrents'
+import filmList from '../components/filmList'
 
 export default {
-  components: {InputTorrent, Torrents},
+  components: {InputTorrent, Torrents,filmList},
   data() {
     return {
       user: window.User
