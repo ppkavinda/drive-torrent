@@ -1,9 +1,13 @@
 import Vue from 'vue'
 import App from './app.vue'
 import router from './router'
+import VueFirestore from 'vue-firestore'
 
 import User from './models/User'
 import Socket from './models/Socket'
+
+Vue.config.productionTip = false;
+Vue.use(VueFirestore)
 
 window.User = new User
 
