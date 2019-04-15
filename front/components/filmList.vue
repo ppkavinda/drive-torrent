@@ -1,42 +1,23 @@
 <template>
     <div class="row">
-        <div class="col s4">
-          <div class="card sm">
-            <img class="card-img-top" src="https://yts.am/assets/images/movies/how_to_train_your_dragon_the_hidden_world_2019/medium-cover.jpg" alt="Card image cap">
-            <div class="card-body">
-              <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+        <div v-for="(film, index) in films" :key="index" class="col s4">
+          <div class="card sticky-action">
+            <div class="card-image waves-effect waves-block waves-light">
+              <img class="activator" :src="film.medium_cover_image">
             </div>
-          </div>
-        </div>
-        <div class="col s4">
-          <div class="card sm">
-            <img class="card-img-top" src="https://yts.am/assets/images/movies/how_to_train_your_dragon_the_hidden_world_2019/medium-cover.jpg" alt="Card image cap">
-            <div class="card-body">
-              <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+            <div class="card-content">
+              <span class="card-title activator grey-text text-darken-4">{{film.title}}<i class="material-icons right">more_vert</i></span>
+              <p>{{film.year}}</p>
+              <p><a href="#">Download</a></p>
             </div>
-          </div>
-        </div>
-        <div class="col s4">
-          <div class="card sm">
-            <img class="card-img-top" src="https://yts.am/assets/images/movies/how_to_train_your_dragon_the_hidden_world_2019/medium-cover.jpg" alt="Card image cap">
-            <div class="card-body">
-              <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-            </div>
-          </div>
-        </div>
-        <div class="col s4">
-          <div class="card sm">
-            <img class="card-img-top" src="https://yts.am/assets/images/movies/how_to_train_your_dragon_the_hidden_world_2019/medium-cover.jpg" alt="Card image cap">
-            <div class="card-body">
-              <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-            </div>
-          </div>
-        </div>
-        <div class="col s4">
-          <div class="card sm">
-            <img class="card-img-top" src="https://yts.am/assets/images/movies/how_to_train_your_dragon_the_hidden_world_2019/medium-cover.jpg" alt="Card image cap">
-            <div class="card-body">
-              <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+            <div class="card-reveal">
+              <span class="card-title grey-text text-darken-4">{{film.title}}<i class="material-icons right">close</i></span>
+              <p>
+                <b>IMDB:</b> <a v-bind:href="'https://www.imdb.com/title/'+film.imdb_code">{{film.rating}}</a><br>
+                <b>Run time:</b> {{film.runtime}}<br>
+                <b>Summary:</b><br>
+                {{film.synopsis}}
+              </p>
             </div>
           </div>
         </div>
@@ -44,8 +25,23 @@
 </template>
 
 <script>
+import {db} from '../config/firebase';
+
 export default {
-    
+    data(){
+      return {
+        films: [],
+        ref: db.collection('films')
+      }
+    },
+    created(){
+      db.collection('films').orderBy('date_uploaded','desc').limit(9).get().then((querySnapshot)=> {
+        querySnapshot.forEach((doc) => {
+          this.films.push(doc.data());
+        })
+      })
+    }
+
 }
 </script>
 
