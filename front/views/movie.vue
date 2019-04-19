@@ -9,19 +9,19 @@
             <div class="col s8">
                 <div class="card">
                     <div class="card-content">
-                    <div class="card-title">{{movie.title}}</div>
+                    <div class="card-title"><h4>{{movie.title}}</h4></div>
                         <p>{{movie.year}}</p><br>
-                        <div class="row">
-                            <div class="col" v-for="(tag, index) in movie.genres" :key="index">
-                                <span class="btn">{{tag}}</span>
-                            </div>
-                        </div>
                         <div class="row">
                             <div class="col s2">
                                 <img src="https://yts.am/assets/images/website/logo-imdb.svg">
                             </div>
                             <div class="col s2">
                                 <p>{{movie.rating}}</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col" v-for="(tag, index) in movie.genres" :key="index">
+                                <span class="btn orange lighten-4 black-text">{{tag}}</span>
                             </div>
                         </div>
                         <br>
@@ -34,20 +34,21 @@
         <div class="card">
             <div class="card-content">
                 <div class="row valign-wrapper" v-for="(torrent, index) in movie.torrents" :key="index">
-                    <div class="col s4">
+                    <div class="col l4">
                         Quality:{{torrent.type}} {{torrent.quality}}
                     </div>
-                    <div class="col s2">
+                    <div class="col l2">
                         Size: {{torrent.size}}
                     </div>
-                    <div class="col s2">
+                    <div class="col l2">
                         <a class="waves-effect waves-light btn-small" :href="torrent.url">Torrent</a>
                     </div>
-                    <div class="col s2">
-                        <a class="waves-effect waves-light btn-small" :href="'magnet:?xt=urn:btih:'+torrent.hash+'&dn=Url+Encoded+Movie+Name&tr=udp://glotorrents.pw:6969/announce&tr=udp://tracker.opentrackr.org:1337/announce&tr=udp://torrent.gresille.org:80/announce&tr=udp://tracker.openbittorrent.com:80&tr=udp://tracker.coppersurfer.tk:6969&tr=udp://tracker.leechers-paradise.org:6969&tr=udp://p4p.arenabg.ch:1337&tr=udp://tracker.internetwarriors.net:1337'">Magnent</a>
+                    <div class="col l2">
+                        <a class="waves-effect waves-light btn-small" :href="getMagnet(movie.title_long, torrent.hash)">Magnent</a>
                     </div>
-                    <div class="col s2">
-                        <a class="waves-effect waves-light btn-small">Direct</a>
+                    <div class="col l2">
+                        <!-- <a class="waves-effect waves-light btn-small">Direct</a> -->
+                    <button class="btn orange waves-effect waves-light btn-large right" @click="downloadTorrent(movie.title_long, torrent)">Drive torrent</button>
                     </div>
                 </div>
             </div>
@@ -63,14 +64,14 @@
                         <th>Alive</th>
                     </tr>
                     <tr>
-                        <td><a href="https://google.com">Sample Google Drive1</a></td>
+                        <td><a href="#">Sample Google Drive1</a></td>
                         <td>720p</td>
                         <td>105</td>
                         <td>20</td>
                         <td>Alive</td>
                     </tr>
                     <tr>
-                        <td><a href="https://google.com">Sample Google Drive2</a></td>
+                        <td><a href="#">Sample Google Drive2</a></td>
                         <td>1080p</td>
                         <td>101</td>
                         <td>200</td>
@@ -98,6 +99,22 @@ export default {
         return{
             id: 0,
             movie:{}
+        }
+    },
+    methods: {
+        downloadTorrent(movieName, torrent) {
+            let magnet = this.getMagnet(movieName, torrent.hash);
+
+            axios.post("/new/magnet", { magnet })
+            .then(res => {
+                this.$router.push({name: 'downloading'})
+            })
+            .catch(err => {
+                if (err.response.status == 401) window.location.replace('/login')
+            });
+        },
+        getMagnet(movieName, infoHash) {
+            return `magnet:?xt=urn:btih:${infoHash}&dn=${encodeURI(movieName)}&tr=udp://glotorrents.pw:6969/announce&tr=udp://tracker.opentrackr.org:1337/announce&tr=udp://torrent.gresille.org:80/announce&tr=udp://tracker.openbittorrent.com:80&tr=udp://tracker.coppersurfer.tk:6969&tr=udp://tracker.leechers-paradise.org:6969&tr=udp://p4p.arenabg.ch:1337&tr=udp://tracker.internetwarriors.net:1337`
         }
     },
     mounted(){

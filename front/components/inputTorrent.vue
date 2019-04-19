@@ -1,26 +1,27 @@
 <template>
   <div class="row">
-    <form @submit.prevent="addTorrent()" class="col s12">
-      <div class="row">
-        <div class="input-field col s12">
-          <i class="material-icons prefix">get_app</i>
-          <input
-            type="text"
-            v-model="torrent.url"
-            @input="validateURL(torrent.url)"
-            id="icon_prefix2"
-            class="materialize-textarea"
-          >
-          <label for="icon_prefix2">Enter the magnet url or Url of a torrent file</label>
-          <span
-            v-if="!torrent.valid"
-            :class="'helper-text ' + error.color + '-text'"
-            data-error="wrong"
-            data-success="right"
-          >{{ error.msg }}</span>
+      <form @submit.prevent="addTorrent()" class="card col s12">
+        <div class="card-content">
+          <div class="row">
+            <div class="input-field col s12">
+              <i class="material-icons prefix">get_app</i>
+              <input
+                type="text"
+                v-model="torrent.url"
+                @input="validateURL(torrent.url)"
+                id="inputTorrent"
+              >
+              <label for="inputTorrent">Enter the magnet or URL of a torrent file</label>
+              <span
+                v-if="!torrent.valid"
+                :class="'helper-text ' + error.color + '-text'"
+                data-error="wrong"
+                data-success="right"
+              >{{ error.msg }}</span>
+            </div>
+          </div>
         </div>
-      </div>
-    </form>
+      </form>
   </div>
 </template>
 
@@ -79,11 +80,14 @@ export default {
           .then(res => {
             this.error = { msg: "", color: "" };
             this.torrent = { url: "", valid: true, type: "" };
+            this.$router.push({name: 'downloading'})
           })
           .catch(err => {
             this.error.msg = err.response.data.Message;
             this.error.color = "red";
             this.torrent.valid = false;
+            if (err.response.status == 401) window.location.replace('/login')
+
           });
       } else if (this.torrent.type === "url") {
         let url = this.torrent.url;
@@ -92,11 +96,15 @@ export default {
           .then(res => {
             this.error = { msg: "", color: "" };
             this.torrent = { url: "", valid: true, type: "" };
+            this.$router.push({name: 'downloading'})
+
           })
           .catch(err => {
             this.error.msg = err.response.data.Message;
             this.error.color = "red";
             this.torrent.valid = false;
+            if (err.response.status == 401) window.location.replace('/login')
+
           });
       }
     }

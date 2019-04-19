@@ -45,6 +45,8 @@ export default {
         querySnapshot.forEach((doc) => {
           this.films.push(doc.data());
         })
+        this.films.sort((a, b) => a.rating > b.rating ? -1 : 1)
+        console.log(this.films);
       })
     }
 
