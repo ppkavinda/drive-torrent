@@ -101,6 +101,7 @@ func uploadToDrive(d *drive.Service, description string,
 	}
 
 	log.Println("Start upload")
+
 	f := &drive.File{Name: fileName, Parents: []string{parentID}, Description: description, MimeType: mimeType}
 	getRate := MeasureTransferRate()
 
@@ -120,16 +121,34 @@ func uploadToDrive(d *drive.Service, description string,
 		// log.Printf("Uploaded at %s, %s/%s\r", getRate(current), Comma(current), Comma(total))
 	}
 
-	r, err := d.Files.Create(f).ResumableMedia(context.Background(), input, inputInfo.Size(), mimeType).ProgressUpdater(showProgress).Do()
+	r, err := d.Files.Create(f).ResumableMedia(context.Background(), input, inputInfo.Size(), mimeType).
+		ProgressUpdater(showProgress).Do()
 	if err != nil {
 		fmt.Printf("An error occurred: %v\nFILEPATH: %+v\n", err, input.Name())
 		return nil, err
 	}
 
+	// share file publically
+	shareable := &drive.Permission{Role: "reader", Type: "anyone"}
+	_, err = d.Permissions.Create(r.Id, shareable).Do()
+	if err != nil {
+		fmt.Printf("An error occurred: %v\nPErmission: %+v\n", err, input.Name())
+		return nil, err
+	}
+
+	// get sharable file
+	sharedFile, err := d.Files.Get(r.Id).Fields("webContentLink", "webViewLink").Do()
+	if err != nil {
+		fmt.Printf("An error occurred: %v\ngetFile: %+v\n", err, input.Name())
+		return nil, err
+	}
+
 	// Total bytes transferred
-	bytes := r.Size
+	// bytes := r.Size
+	log.Printf("uploaded file : %+v \n", r.WebContentLink)
+	log.Printf("ViewLink %+v\nDownloadLink: %+v\n", sharedFile.WebViewLink, sharedFile.WebContentLink)
 	// Print information about uploaded file
-	log.Printf("Uploaded '%s' at %s, total %s\n", r.Name, getRate(bytes), FileSizeFormat(bytes, false))
+	// log.Printf("Uploaded '%s' at %s, total %s\n", r.Name, getRate(bytes), FileSizeFormat(bytes, false))
 	return r, nil
 }
 
