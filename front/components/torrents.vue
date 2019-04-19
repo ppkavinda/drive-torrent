@@ -91,16 +91,20 @@ export default {
         return {
             width: width + '%',
         }
+    },
+    syncTorrents(e) {
+      console.log(e);
+      this.torrents = e;
     }
   },
   computed: {
 
   },
   mounted() {
-    window.sock.on("sync-torrent", e => {
-      console.log(e);
-      this.torrents = e;
-    });
+    window.sock.on("sync-torrent", this.syncTorrents);
+  },
+  beforeDestroy() {
+    window.sock.off('sync-torrent', this.syncTorrents);
   }
 };
 </script>

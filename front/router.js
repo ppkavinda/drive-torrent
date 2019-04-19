@@ -2,7 +2,9 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/home.vue'
 import Status from './views/status.vue'
+import Downloading from './views/downloading.vue'
 import Movie from './views/movie.vue'
+import NotFound from './views/notFound.vue';
 
 Vue.use(Router)
 
@@ -16,14 +18,23 @@ export default new Router({
             component: Home,
         },
         {
-            path: '/status',
-            name: 'status',
-            component: Status,
+            path: '/downloading',
+            name: 'downloading',
+            component: Downloading,
         },
+        // {
+        //     path: '/status',
+        //     name: 'status',
+        //     component: Status,
+        // },
         {
             path: '/movie/:id',
             name: 'movie',
             component: Movie
+        },
+        {
+            path: '*',
+            component: NotFound,
         }
     ]
 })
