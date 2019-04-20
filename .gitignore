@@ -3,3 +3,8 @@ tokens/*
 node_modules
 info.db
 front/config/firebase.js
+
+# Syncer ignore
+
+syncer/node-node_modules
+syncer/service.json
