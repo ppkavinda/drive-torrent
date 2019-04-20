@@ -67,6 +67,7 @@ export default {
     // to toggle mobile nav
     var elems = document.querySelectorAll('.sidenav');
     var instances = M.Sidenav.init(elems);
+
   }
 };
 </script>

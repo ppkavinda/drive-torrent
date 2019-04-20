@@ -145,8 +145,8 @@ func uploadToDrive(d *drive.Service, description string,
 
 	// Total bytes transferred
 	// bytes := r.Size
-	log.Printf("uploaded file : %+v \n", r.WebContentLink)
-	log.Printf("ViewLink %+v\nDownloadLink: %+v\n", sharedFile.WebViewLink, sharedFile.WebContentLink)
+	log.Printf("uploaded file : %+v \n", r.Name)
+	SaveDriveLink((*torrent).InfoHash, sharedFile.WebViewLink, r.Name)
 	// Print information about uploaded file
 	// log.Printf("Uploaded '%s' at %s, total %s\n", r.Name, getRate(bytes), FileSizeFormat(bytes, false))
 	return r, nil

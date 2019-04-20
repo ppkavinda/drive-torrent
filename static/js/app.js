@@ -27233,7 +27233,7 @@ __webpack_require__.r(__webpack_exports__);
           _this.$router.push({
             name: 'downloading'
           });
-        })["catch"](function (err) {
+        }).catch(function (err) {
           _this.error.msg = err.response.data.Message;
           _this.error.color = "red";
           _this.torrent.valid = false;
@@ -27257,7 +27257,7 @@ __webpack_require__.r(__webpack_exports__);
           _this.$router.push({
             name: 'downloading'
           });
-        })["catch"](function (err) {
+        }).catch(function (err) {
           _this.error.msg = err.response.data.Message;
           _this.error.color = "red";
           _this.torrent.valid = false;
@@ -27620,6 +27620,10 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _router__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../router */ "./front/router.js");
 /* harmony import */ var _config_firebase__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../config/firebase */ "./front/config/firebase.js");
+/* harmony import */ var _firebase_app__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @firebase/app */ "./node_modules/@firebase/app/dist/index.cjs.js");
+/* harmony import */ var _firebase_app__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_firebase_app__WEBPACK_IMPORTED_MODULE_2__);
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 //
 //
 //
@@ -27696,21 +27700,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
+
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -27718,7 +27708,8 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       id: 0,
-      movie: {}
+      movie: {},
+      links: {}
     };
   },
   methods: {
@@ -27732,8 +27723,32 @@ __webpack_require__.r(__webpack_exports__);
         _this.$router.push({
           name: 'downloading'
         });
-      })["catch"](function (err) {
+      }).catch(function (err) {
         if (err.response.status == 401) window.location.replace('/login');
+      });
+    },
+    upvote: function upvote(hash, name) {
+      _config_firebase__WEBPACK_IMPORTED_MODULE_1__["db"].doc("hashes/".concat(hash)).set(_defineProperty({}, name, {
+        upvotes: _firebase_app__WEBPACK_IMPORTED_MODULE_2__["firebase"].firestore.FieldValue.increment(1)
+      }), {
+        merge: true
+      });
+    },
+    downvote: function downvote(hash, name) {
+      _config_firebase__WEBPACK_IMPORTED_MODULE_1__["db"].doc("hashes/".concat(hash)).set(_defineProperty({}, name, {
+        downvotes: _firebase_app__WEBPACK_IMPORTED_MODULE_2__["firebase"].firestore.FieldValue.increment(1)
+      }), {
+        merge: true
+      });
+    },
+    getFilesOfHash: function getFilesOfHash(hash) {
+      var _this2 = this;
+
+      _config_firebase__WEBPACK_IMPORTED_MODULE_1__["db"].doc("hashes/".concat(hash)).onSnapshot(function (snap) {
+        var data = snap.data();
+        if (!data) return;
+
+        _this2.$set(_this2.links, hash, data);
       });
     },
     getMagnet: function getMagnet(movieName, infoHash) {
@@ -27741,11 +27756,19 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   mounted: function mounted() {
-    var _this2 = this;
+    var _this3 = this;
 
+    setTimeout(function () {
+      var elems = document.querySelectorAll('.collapsible');
+      var instances = M.Collapsible.init(elems);
+    }, 2000);
     this.id = this.$route.params.id;
     _config_firebase__WEBPACK_IMPORTED_MODULE_1__["db"].collection('films').doc("".concat(this.id)).get().then(function (querySnapshot) {
-      _this2.movie = querySnapshot.data();
+      _this3.movie = querySnapshot.data();
+
+      _this3.movie.torrents.forEach(function (torrent) {
+        _this3.getFilesOfHash(torrent.hash);
+      });
     });
   }
 });
@@ -29852,7 +29875,7 @@ var render = function() {
         on: {
           submit: function($event) {
             $event.preventDefault()
-            return _vm.addTorrent()
+            _vm.addTorrent()
           }
         }
       },
@@ -29884,7 +29907,7 @@ var render = function() {
                       _vm.$set(_vm.torrent, "url", $event.target.value)
                     },
                     function($event) {
-                      return _vm.validateURL(_vm.torrent.url)
+                      _vm.validateURL(_vm.torrent.url)
                     }
                   ]
                 }
@@ -30152,7 +30175,7 @@ var render = function() {
         on: {
           submit: function($event) {
             $event.preventDefault()
-            return _vm.addTorrent()
+            _vm.addTorrent()
           }
         }
       },
@@ -30177,7 +30200,7 @@ var render = function() {
                 domProps: { value: _vm.query.text },
                 on: {
                   keyup: function($event) {
-                    return _vm.searchTorrents(_vm.query.text)
+                    _vm.searchTorrents(_vm.query.text)
                   },
                   input: function($event) {
                     if ($event.target.composing) {
@@ -30276,7 +30299,7 @@ var render = function() {
                                     "btn btn-small  waves-effect waves-light green",
                                   on: {
                                     click: function($event) {
-                                      return _vm.start(torrent.InfoHash)
+                                      _vm.start(torrent.InfoHash)
                                     }
                                   }
                                 },
@@ -30299,7 +30322,7 @@ var render = function() {
                                     "btn waves-effect waves-light btn-small orange",
                                   on: {
                                     click: function($event) {
-                                      return _vm.stop(torrent.InfoHash)
+                                      _vm.stop(torrent.InfoHash)
                                     }
                                   }
                                 },
@@ -30320,7 +30343,7 @@ var render = function() {
                               staticClass: "waves-effect waves-light btn red",
                               on: {
                                 click: function($event) {
-                                  return _vm.remove(torrent.InfoHash)
+                                  _vm.remove(torrent.InfoHash)
                                 }
                               }
                             },
@@ -30489,89 +30512,80 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "container" }, [
-    _c("div", { staticClass: "row" }, [
-      _c("div", { staticClass: "col s4" }, [
-        _c(
-          "div",
-          { staticClass: "card-image waves-effect waves-block waves-light" },
-          [
-            _c("img", {
-              staticClass: "activator",
-              attrs: { src: _vm.movie.medium_cover_image }
-            })
-          ]
-        )
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "col s8" }, [
-        _c("div", { staticClass: "card" }, [
-          _c("div", { staticClass: "card-content" }, [
-            _c("div", { staticClass: "card-title" }, [
-              _c("h4", [_vm._v(_vm._s(_vm.movie.title))])
-            ]),
-            _vm._v(" "),
-            _c("p", [_vm._v(_vm._s(_vm.movie.year))]),
-            _c("br"),
-            _vm._v(" "),
-            _c("div", { staticClass: "row" }, [
-              _vm._m(0),
+  return _c(
+    "div",
+    { staticClass: "container" },
+    [
+      _c("div", { staticClass: "row" }, [
+        _c("div", { staticClass: "col s4" }, [
+          _c(
+            "div",
+            { staticClass: "card-image waves-effect waves-block waves-light" },
+            [
+              _c("img", {
+                staticClass: "activator",
+                attrs: { src: _vm.movie.medium_cover_image }
+              })
+            ]
+          )
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "col s8" }, [
+          _c("div", { staticClass: "card" }, [
+            _c("div", { staticClass: "card-content" }, [
+              _c("div", { staticClass: "card-title" }, [
+                _c("h4", [_vm._v(_vm._s(_vm.movie.title))])
+              ]),
               _vm._v(" "),
-              _c("div", { staticClass: "col s2" }, [
-                _c("p", [_vm._v(_vm._s(_vm.movie.rating))])
-              ])
-            ]),
-            _vm._v(" "),
-            _c(
-              "div",
-              { staticClass: "row" },
-              _vm._l(_vm.movie.genres, function(tag, index) {
-                return _c("div", { key: index, staticClass: "col" }, [
-                  _c(
-                    "span",
-                    { staticClass: "btn orange lighten-4 black-text" },
-                    [_vm._v(_vm._s(tag))]
-                  )
+              _c("p", [_vm._v(_vm._s(_vm.movie.year))]),
+              _c("br"),
+              _vm._v(" "),
+              _c("div", { staticClass: "row" }, [
+                _vm._m(0),
+                _vm._v(" "),
+                _c("div", { staticClass: "col s2" }, [
+                  _c("p", [_vm._v(_vm._s(_vm.movie.rating))])
                 ])
-              }),
-              0
-            ),
-            _vm._v(" "),
-            _c("br"),
-            _vm._v(" "),
-            _c("p", [_vm._v("synopsis: " + _vm._s(_vm.movie.synopsis) + " ")]),
-            _vm._v(" "),
-            _c("br")
+              ]),
+              _vm._v(" "),
+              _c(
+                "div",
+                { staticClass: "row" },
+                _vm._l(_vm.movie.genres, function(tag, index) {
+                  return _c("div", { key: index, staticClass: "col" }, [
+                    _c(
+                      "span",
+                      { staticClass: "btn orange lighten-4 black-text" },
+                      [_vm._v(_vm._s(tag))]
+                    )
+                  ])
+                }),
+                0
+              ),
+              _vm._v(" "),
+              _c("br"),
+              _vm._v(" "),
+              _c("p", [
+                _vm._v("synopsis: " + _vm._s(_vm.movie.synopsis) + " ")
+              ]),
+              _vm._v(" "),
+              _c("br")
+            ])
           ])
         ])
-      ])
-    ]),
-    _vm._v(" "),
-    _c("div", { staticClass: "card" }, [
-      _c(
-        "div",
-        { staticClass: "card-content" },
-        _vm._l(_vm.movie.torrents, function(torrent, index) {
-          return _c("div", { key: index, staticClass: "row valign-wrapper" }, [
-            _c("div", { staticClass: "col l4" }, [
-              _vm._v(
-                "\n                    Quality:" +
-                  _vm._s(torrent.type) +
-                  " " +
-                  _vm._s(torrent.quality) +
-                  "\n                "
-              )
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "col l2" }, [
-              _vm._v(
-                "\n                    Size: " +
-                  _vm._s(torrent.size) +
-                  "\n                "
-              )
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "col l2" }, [
+      ]),
+      _vm._v(" "),
+      _vm._l(_vm.movie.torrents, function(torrent, index) {
+        return _c("div", { key: index, staticClass: "card" }, [
+          _c("div", { staticClass: "card-content" }, [
+            _c("div", { staticClass: "card-title" }, [
+              _c("h5", [
+                _vm._v(
+                  _vm._s(torrent.type) + " " + _vm._s(torrent.quality) + " "
+                ),
+                _c("small", [_vm._v("(" + _vm._s(torrent.size) + ")")])
+              ]),
+              _vm._v(" "),
               _c(
                 "a",
                 {
@@ -30579,10 +30593,8 @@ var render = function() {
                   attrs: { href: torrent.url }
                 },
                 [_vm._v("Torrent")]
-              )
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "col l2" }, [
+              ),
+              _vm._v(" "),
               _c(
                 "a",
                 {
@@ -30592,47 +30604,121 @@ var render = function() {
                   }
                 },
                 [_vm._v("Magnent")]
-              )
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "col l2" }, [
+              ),
+              _vm._v(" "),
               _c(
-                "button",
+                "a",
                 {
-                  staticClass:
-                    "btn orange waves-effect waves-light btn-large right",
+                  staticClass: "btn orange waves-effect waves-light ",
                   on: {
                     click: function($event) {
-                      return _vm.downloadTorrent(_vm.movie.title_long, torrent)
+                      _vm.downloadTorrent(_vm.movie.title_long, torrent)
                     }
                   }
                 },
                 [_vm._v("Drive torrent")]
               )
-            ])
+            ]),
+            _vm._v(" "),
+            _c(
+              "ul",
+              { ref: "coll", refInFor: true, staticClass: "collapsible" },
+              [
+                _c("li", [
+                  _vm._m(1, true),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "collapsible-body" }, [
+                    _c(
+                      "table",
+                      { staticClass: "striped" },
+                      [
+                        _vm._m(2, true),
+                        _vm._v(" "),
+                        _vm._l(_vm.links[torrent.hash], function(
+                          file,
+                          name,
+                          i
+                        ) {
+                          return _c("tr", { key: i }, [
+                            _c("td", [
+                              _c("a", { attrs: { href: file.link } }, [
+                                _vm._v(_vm._s(name))
+                              ])
+                            ]),
+                            _vm._v(" "),
+                            _c("td", [_vm._v(_vm._s(file.upvotes))]),
+                            _vm._v(" "),
+                            _c("td", [_vm._v(_vm._s(file.downvotes))]),
+                            _vm._v(" "),
+                            _c("td", [
+                              _c(
+                                "button",
+                                {
+                                  staticClass: "btn",
+                                  on: {
+                                    click: function($event) {
+                                      _vm.upvote(torrent.hash, name)
+                                    }
+                                  }
+                                },
+                                [
+                                  _c("i", { staticClass: "material-icons" }, [
+                                    _vm._v("check")
+                                  ])
+                                ]
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "button",
+                                {
+                                  staticClass: "btn red",
+                                  on: {
+                                    click: function($event) {
+                                      _vm.downvote(torrent.hash, name)
+                                    }
+                                  }
+                                },
+                                [
+                                  _c("i", { staticClass: "material-icons" }, [
+                                    _vm._v("close")
+                                  ])
+                                ]
+                              )
+                            ])
+                          ])
+                        }),
+                        _vm._v(" "),
+                        !_vm.links[torrent.hash]
+                          ? _c("tr", [_vm._v("No Drive links yet")])
+                          : _vm._e()
+                      ],
+                      2
+                    )
+                  ])
+                ])
+              ]
+            )
           ])
-        }),
-        0
-      )
-    ]),
-    _vm._v(" "),
-    _vm._m(1),
-    _vm._v(" "),
-    _c("div", { staticClass: "row" }, [
-      _c("iframe", {
-        attrs: {
-          type: "text/html",
-          src:
-            "https://youtube.com/embed/" +
-            _vm.movie.yt_trailer_code +
-            "?autoplay=0",
-          frameborder: "0",
-          width: "100%",
-          height: "360"
-        }
-      })
-    ])
-  ])
+        ])
+      }),
+      _vm._v(" "),
+      _c("div", { staticClass: "row" }, [
+        _c("iframe", {
+          attrs: {
+            type: "text/html",
+            src:
+              "https://youtube.com/embed/" +
+              _vm.movie.yt_trailer_code +
+              "?autoplay=0",
+            frameborder: "0",
+            width: "100%",
+            height: "360"
+          }
+        })
+      ])
+    ],
+    2
+  )
 }
 var staticRenderFns = [
   function() {
@@ -30649,53 +30735,24 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "card" }, [
-      _c("div", { staticClass: "card-content" }, [
-        _c("table", { staticClass: "striped" }, [
-          _c("tr", [
-            _c("th", [_vm._v("Link")]),
-            _vm._v(" "),
-            _c("th", [_vm._v("Quality")]),
-            _vm._v(" "),
-            _c("th", [_vm._v("Up votes")]),
-            _vm._v(" "),
-            _c("th", [_vm._v("Down votes")]),
-            _vm._v(" "),
-            _c("th", [_vm._v("Alive")])
-          ]),
-          _vm._v(" "),
-          _c("tr", [
-            _c("td", [
-              _c("a", { attrs: { href: "#" } }, [
-                _vm._v("Sample Google Drive1")
-              ])
-            ]),
-            _vm._v(" "),
-            _c("td", [_vm._v("720p")]),
-            _vm._v(" "),
-            _c("td", [_vm._v("105")]),
-            _vm._v(" "),
-            _c("td", [_vm._v("20")]),
-            _vm._v(" "),
-            _c("td", [_vm._v("Alive")])
-          ]),
-          _vm._v(" "),
-          _c("tr", [
-            _c("td", [
-              _c("a", { attrs: { href: "#" } }, [
-                _vm._v("Sample Google Drive2")
-              ])
-            ]),
-            _vm._v(" "),
-            _c("td", [_vm._v("1080p")]),
-            _vm._v(" "),
-            _c("td", [_vm._v("101")]),
-            _vm._v(" "),
-            _c("td", [_vm._v("200")]),
-            _vm._v(" "),
-            _c("td", [_vm._v("Dead")])
-          ])
-        ])
+    return _c("div", { staticClass: "collapsible-header" }, [
+      _c("i", { staticClass: "material-icons" }, [_vm._v("filter_drama")]),
+      _vm._v("Drive Links")
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("tr", [
+      _c("th", [_vm._v("File")]),
+      _vm._v(" "),
+      _c("th", [_vm._v("Up votes")]),
+      _vm._v(" "),
+      _c("th", [_vm._v("Down votes")]),
+      _vm._v(" "),
+      _c("th", { attrs: { title: "does the link work or not?" } }, [
+        _vm._v("Works ?")
       ])
     ])
   }
