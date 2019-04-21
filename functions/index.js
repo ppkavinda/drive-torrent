@@ -35,6 +35,38 @@ exports.removeFilm = functions.firestore.document('films/{document}').onDelete(e
         .catch(err => console.log('Error in Deleteing', err));
 })
 
+//Fetch all records
+// exports.fetchToAlgolia = functions.https.onRequest((req, res) => {
+//     const ALGOLIA_ID = functions.config().algolia.app_id;
+//     const ALGOLIA_ADMIN_KEY = functions.config().algolia.api_key;
+//     const client = algoliasearch(ALGOLIA_ID, ALGOLIA_ADMIN_KEY);
+//     const index = client.initIndex('films');
+//     const records = [];
+//     db.collection('films').limit(500).get()
+//         .then((snapshot) => {
+//             snapshot.forEach((doc) => {
+//                 const childKey = doc.id;
+//                 const childData = doc.data();
+
+//                 childData.objectID = childKey;
+
+//                 records.push(childData);
+
+//                 //console.log(doc.id, ' => ', 'fetched');
+//             });
+
+//             index.saveObjects(records).then(() => {
+//                 console.log('Document Imported into Algolia');
+//                 //process.exit(0);
+//             }).catch((err) => {
+//                 console.log('Error in importing..', err);
+//                 //process.exit(1);
+//             })
+//         }).catch((err) => {
+//             console.log('Error getting docuement', err);
+//         });
+// })
+
 // Add to algolia
 function addToAlgolia(object, indexName){
     const ALGOLIA_ID = functions.config().algolia.app_id;
