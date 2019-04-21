@@ -26,6 +26,15 @@ exports.editFilm = functions.firestore.document('films/{document}').onUpdate(eve
         .catch(err => console.log('Error in update in algolia', err));
 })
 
+//Listen for remove a record
+exports.removeFilm = functions.firestore.document('films/{document}').onDelete(event => {
+    console.log('Deleting movie..', event)
+
+    return deleteFromAlgolia(event.data(), 'films')
+        .then(res => console.log('Deleted Successfull', res))
+        .catch(err => console.log('Error in Deleteing', err));
+})
+
 // Add to algolia
 function addToAlgolia(object, indexName){
     const ALGOLIA_ID = functions.config().algolia.app_id;
@@ -54,3 +63,15 @@ function editToAlgolia(object, indexName) {
     });
 }
 
+function deleteFromAlgolia(objectId, indexName) {
+    const ALGOLIA_ID = functions.config().algolia.app_id;
+    const ALGOLIA_ADMIN_KEY = functions.config().algolia.api_key;
+    const client = algoliasearch(ALGOLIA_ID, ALGOLIA_ADMIN_KEY);
+    const index = client.initIndex(indexName);
+
+    return new Promise((resolve, reject) => {
+        index.deleteObject(objectId)
+            .then(res => {console.log('res Good', res); resolve(res)})
+            .catch(err => { console.log('err BAD', err); reject(err)})
+    });
+}
