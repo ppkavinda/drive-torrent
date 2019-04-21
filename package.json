@@ -18,6 +18,7 @@
   "dependencies": {
     "@firebase/app": "^0.3.15",
     "@firebase/firestore": "^1.1.4",
+    "algoliasearch": "^3.32.1",
     "axios": "^0.18.0",
     "browser-sync": "^2.26.3",
     "browser-sync-webpack-plugin": "^2.2.2",

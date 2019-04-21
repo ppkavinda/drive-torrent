@@ -8,3 +8,4 @@ front/config/firebase.js
 
 syncer/node-node_modules
 syncer/service.json
+.firebaserc
