@@ -1,9 +1,15 @@
 import Vue from 'vue'
 import App from './app.vue'
 import router from './router'
+import VueFirestore from 'vue-firestore'
+import InstantSearch from 'vue-instantsearch'
 
 import User from './models/User'
 import Socket from './models/Socket'
+
+Vue.config.productionTip = false;
+Vue.use(VueFirestore)
+Vue.use(InstantSearch)
 
 window.User = new User
 

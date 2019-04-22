@@ -1,16 +1,11 @@
 <template>
   <div class="container">
     <div class="row">
-      <div v-if="user.isLoggedIn()">
         <input-torrent></input-torrent>
-        <torrents></torrents>
+        <!-- <torrents></torrents> -->
       </div>
-
-      <div v-else v-cloak class="valign-wrapper">
-        <a href="/login" class="center-align waves-effect orange darken-1 waves-light btn-large">
-          <i class="material-icons right">lock</i>Login with Google Drive
-        </a>
-      </div>
+      <search></search>
+      <!-- <film-List></film-List> -->
     </div>
   </div>
 </template>
@@ -18,9 +13,11 @@
 <script>
 import InputTorrent from '../components/inputTorrent'
 import Torrents from '../components/torrents'
+// import filmList from '../components/filmList'
+import search from '../components/search'
 
 export default {
-  components: {InputTorrent, Torrents},
+  components: {InputTorrent, Torrents, search},
   data() {
     return {
       user: window.User
