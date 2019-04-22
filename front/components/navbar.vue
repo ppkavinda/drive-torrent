@@ -8,7 +8,7 @@
         <ul id="nav-mobile" class="right hide-on-med-and-down">
           <div v-if="user.isLoggedIn()">
             <li>
-              <router-link to="downloading">Downloading</router-link>
+              <router-link to="/downloading">Downloading</router-link>
             </li>
             <li>
               <a href="/logout">Logout</a>
