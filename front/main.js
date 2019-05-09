@@ -7,9 +7,15 @@ import InstantSearch from 'vue-instantsearch'
 import User from './models/User'
 import Socket from './models/Socket'
 
+import VueAnalytics from 'vue-analytics'
+
 Vue.config.productionTip = false;
 Vue.use(VueFirestore)
 Vue.use(InstantSearch)
+Vue.use(VueAnalytics, {
+    id: 'UA-116031370-3',
+    router
+})
 
 window.User = new User
 
