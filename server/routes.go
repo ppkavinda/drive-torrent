@@ -7,10 +7,14 @@ import (
 	"os"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"github.com/gobuffalo/packr"
 )
 
 // here lies all the routes of the app
 func getRoutes(s *Server, r *mux.Router) *mux.Router {
+
+	box := packr.NewBox("../static")
+	index, e := box.FindString("index.html")
 
 	r.Methods("GET").Path("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		t := template.Must(template.New("index.html").Funcs(template.FuncMap{
@@ -18,7 +22,7 @@ func getRoutes(s *Server, r *mux.Router) *mux.Router {
 				a, _ := json.Marshal(v)
 				return string(a)
 			},
-		}).ParseFiles("static/index.html"))
+		}).ParseFiles(index))
 		t.Execute(w, GetUser(r))
 		// fmt.Printf("%+v\n", t.Execute(w, GetUser()))
 	})
