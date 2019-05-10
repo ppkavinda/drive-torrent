@@ -1,6 +1,6 @@
 rm -rf releases
 mkdir releases
-npm run dev
+npm run prod
 cp -R static releases/static
 
 GOOS=darwin GOARCH=amd64 packr build
