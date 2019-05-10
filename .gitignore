@@ -2,6 +2,7 @@ downloads
 tokens/*
 node_modules
 info.db
+static/js/app.js
 front/config/firebase.js
 ytsag-e857b-firebase-adminsdk-shrm5-50421f9d81.json
 

@@ -2,7 +2,7 @@
   <div class="container">
     <div class="row">
         <input-torrent></input-torrent>
-        <torrents></torrents>
+        <!-- <torrents></torrents> -->
       </div>
       <search></search>
       <!-- <film-List></film-List> -->
