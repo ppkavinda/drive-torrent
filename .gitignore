@@ -13,4 +13,3 @@ syncer/node-node_modules
 syncer/service.json
 .firebaserc
 releases
-static/js/app.js
