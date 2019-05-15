@@ -5,6 +5,7 @@ import Status from './views/status.vue'
 import Downloading from './views/downloading.vue'
 import Movie from './views/movie.vue'
 import NotFound from './views/notFound.vue';
+import Dashboard from './views/admin/dashboard.vue';
 
 Vue.use(Router)
 
@@ -31,6 +32,12 @@ export default new Router({
             path: '/movie/:id',
             name: 'movie',
             component: Movie
+        },
+        //Admin Routes
+        {
+            path: '/admin/dashboard',
+            name: 'dashboard',
+            component: Dashboard
         },
         {
             path: '*',
