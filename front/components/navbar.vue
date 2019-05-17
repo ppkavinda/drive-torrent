@@ -20,14 +20,14 @@
         </ul>
       </div>
     </div> 
-     <div class="switch right">
+     <!-- <div class="switch right">
         <label>
           <input v-model="settings.fixed" type="checkbox">
           Non Sticky
           <span class="lever"></span>
           Sticky
         </label>
-      </div>
+      </div> -->
   </nav>
   <ul class="sidenav orange darken-1" id="mobile-demo">
       <li>
@@ -54,7 +54,7 @@ export default {
   data() {
     return {
       settings : {
-        fixed: false
+        fixed: true
         }
     }
   },
