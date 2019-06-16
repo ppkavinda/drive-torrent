@@ -36778,9 +36778,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       _config_firebase__WEBPACK_IMPORTED_MODULE_1__["db"].doc("hashes/".concat(hash)).onSnapshot(function (snap) {
         var data = snap.data();
+        console.log('Hash', hash);
+        console.log('data', data);
         if (!data) return;
 
         _this2.$set(_this2.links, hash, data);
+
+        console.log("links", _this2.links);
       });
     },
     getMagnet: function getMagnet(movieName, infoHash) {
@@ -36799,7 +36803,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       _this3.movie = querySnapshot.data();
 
       _this3.movie.torrents.forEach(function (torrent) {
-        _this3.getFilesOfHash(torrent.hash);
+        _this3.getFilesOfHash(torrent.hash.toLowerCase());
       });
     });
   }
@@ -65777,7 +65781,7 @@ var render = function() {
                       [
                         _vm._m(2, true),
                         _vm._v(" "),
-                        _vm._l(_vm.links[torrent.hash], function(
+                        _vm._l(_vm.links[torrent.hash.toLowerCase()], function(
                           file,
                           name,
                           i
