@@ -1,7 +1,7 @@
 {
  "AutoStart": true,
  "DisableEncryption": false,
- "DownloadDirectory": "C:\\Users\\Danushka\\Documents\\drive-torrent\\downloads",
+ "DownloadDirectory": "/home/prasad/go/src/github.com/ppkavinda/drive-torrent/downloads",
  "EnableUpload": true,
  "EnableSeeding": false,
  "IncomingPort": 50007

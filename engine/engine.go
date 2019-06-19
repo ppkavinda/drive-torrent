@@ -208,6 +208,10 @@ func str2hi(infoHash string) (metainfo.Hash, error) {
 	return hi, nil
 }
 
+func (e *Engine) Torrents() []*torrent.Torrent {
+	return e.client.Torrents()
+}
+
 // GetTorrents : store torrents on Engine.ts
 func (e *Engine) GetTorrents() map[string]*Torrent {
 	e.mut.Lock()
