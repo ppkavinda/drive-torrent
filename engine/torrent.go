@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/anacrolix/torrent"
-	// "github.com/ppkavinda/drive-torrent/engine"
 )
 
 // Torrent : store info about torrent
