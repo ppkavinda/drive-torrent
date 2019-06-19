@@ -49,7 +49,7 @@
                                 <th>Down votes</th>
                                 <th title="does the link work or not?">Works ?</th>
                             </tr>
-                            <tr  v-for="(file ,name, i) in links[torrent.hash]" :key="i">
+                            <tr  v-for="(file ,name, i) in links[torrent.hash.toLowerCase()]" :key="i">
                                 <td><a :href="file.link">{{ name }}</a></td>
                                 <td>{{ file.upvotes}}</td>
                                 <td>{{ file.downvotes }}</td>
@@ -128,7 +128,7 @@ export default {
         db.collection('films').doc(`${this.id}`).get().then((querySnapshot) => {
             this.movie = querySnapshot.data();
             this.movie.torrents.forEach(torrent => {
-                this.getFilesOfHash(torrent.hash)
+                this.getFilesOfHash(torrent.hash.toLowerCase())
             });
         })
     }
