@@ -32,5 +32,10 @@ export default {
 </script>
 
 <style>
+    @import url('/static/css/materialize.css');
+    @import url('/static/css/style.css');
+    @import url('/static/css/custom.css');
+    @import url('/static/css/flag-icon.min.css');
+    @import url('/static/css/perfect-scrollbar.css');
 </style>
 
