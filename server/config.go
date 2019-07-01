@@ -25,7 +25,8 @@ func init() {
 	}
 	SessionStore = cookieStore
 
-	OAuthConfig = configureOAuthClient("404364039745-0caba0fvhaja2cogru4jvl0gqq3anf50.apps.googleusercontent.com", "zRly0iH-ThMZrYRxER5PT_ue")
+	// OAuthConfig = configureOAuthClient("404364039745-0caba0fvhaja2cogru4jvl0gqq3anf50.apps.googleusercontent.com", "zRly0iH-ThMZrYRxER5PT_ue")
+	OAuthConfig = configureOAuthClient("404364039745-qe4mgo1jhqom3k7sve6usqh44c732u6c.apps.googleusercontent.com", "-WB8BpoMI4UZ3a675yJmXgjt")
 	// OAuthConfig = configureOAuthClient("697255292974-h3ukerqst2o86h53dfbabikefm7dknm4.apps.googleusercontent.com", "DFhiPkfTF9yqwiqWGQlsrRFG")
 }
 
