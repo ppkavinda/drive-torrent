@@ -13,8 +13,8 @@
     "algoliasearch": "^3.32.1",
     "basic-auth": "^2.0.1",
     "cors": "^2.8.5",
-    "firebase-admin": "~7.0.0",
-    "firebase-functions": "^2.2.0",
+    "firebase-admin": "~11.4.1",
+    "firebase-functions": "^4.1.1",
     "promise": "^8.0.3",
     "request": "^2.88.0"
   },
