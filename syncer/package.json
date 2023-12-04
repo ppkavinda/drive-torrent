@@ -14,7 +14,7 @@
     "babel-watch": "^2.0.8"
   },
   "dependencies": {
-    "@google-cloud/firestore": "^1.0.1",
+    "@google-cloud/firestore": "^6.2.0",
     "bcrypt": "^3.0.2",
     "body-parser": "^1.18.3",
     "cors": "^2.8.5",
